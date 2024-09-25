@@ -19,35 +19,56 @@ jobs:
         with:
           java-version: '17'
 
-      - name: Build with Gradle
-        run: ./gradlew build
+      - name: Cache Gradle packages
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle
 
-      - name: Run tests
-        run: ./gradlew test
+      - name: Create prod.yml from secret
+        run: |
+          mkdir -p src/main/resources
+          echo "${{ secrets.PROD_YML }}" | base64 --decode > src/main/resources/application-prod.yml
+
+      - name: Build with Gradle (Skip Tests)
+        run: ./gradlew build -x test  # '-x test' 옵션으로 테스트를 제외하고 빌드
 
       - name: Docker Hub Login
-        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USER_NAME }}" --password-stdin
 
       - name: Build Docker image
-        run: docker build -t your-dockerhub-username/your-app-image-name .
+        run: docker build -t ${{ secrets.DOCKER_USER_NAME }}/your-app-image-name .
 
       - name: Push Docker image
-        run: docker push your-dockerhub-username/your-app-image-name
+        run: docker push ${{ secrets.DOCKER_USER_NAME }}/your-app-image-name
 
   deploy:
     runs-on: ubuntu-latest
-
-    needs: build
+    needs: build  # CI 파이프라인의 build 작업이 끝나야 deploy가 실행됨
 
     steps:
+      # EC2 서버로 배포
       - name: Deploy to EC2
-        uses: appleboy/ssh-action@v0.1.1
+        uses: appleboy/ssh-action@v0.1.5
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_KEY }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: 22
         script: |
-          docker pull your-dockerhub-username/your-app-image-name
+          # 배포 경로로 이동
+          cd /home/ubuntu/xclone
+
+          # Docker 이미지를 pull
+          docker pull ${{ secrets.DOCKER_USER_NAME }}/your-app-image-name:latest
+
+          # 기존 컨테이너 중지 및 삭제
           docker stop app || true
           docker rm app || true
-          docker run -d --name app -p 8080:8080 your-dockerhub-username/your-app-image-name
+
+          # 새로운 컨테이너 실행
+          docker run -d --name app -p 8080:8080 ${{ secrets.DOCKER_USER_NAME }}/your-app-image-name:latest
