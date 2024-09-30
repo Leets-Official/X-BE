@@ -1,6 +1,6 @@
 package com.leets.X.domain.user.exception;
 
-import com.leets.X.global.exception.BaseException;
+import com.leets.X.global.common.exception.BaseException;
 
 import static com.leets.X.domain.user.exception.ErrorMessage.*;
 
