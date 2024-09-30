@@ -1,8 +1,12 @@
-# OpenJDK 17 기반의 이미지 사용
-FROM openjdk:17-jdk-alpine
+# open jdk 17 버전의 환경을 구성
+FROM openjdk:17-alpine
 
-# 빌드된 JAR 파일을 도커 이미지에 복사 (파일명을 정확히 기입)
-COPY build/libs/X-0.0.1-SNAPSHOT.jar /app/app.jar
+# build가 되는 시점에 JAR_FILE이라는 변수 명에 build/libs/*.jar 선언
+# build/libs - gradle로 빌드했을 때 jar 파일이 생성되는 경로
+ARG JAR_FILE=build/libs/*.jar
 
-# 애플리케이션 실행 (prod 프로파일로 실행)
-ENTRYPOINT ["java","-Dspring.profiles.active=prod","-jar","/app/app.jar"]
+# JAR_FILE을 app.jar로 복사
+COPY ${JAR_FILE} app.jar
+
+# 운영 및 개발에서 사용되는 환경 설정을 분리
+ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=prod", "/app.jar"]
