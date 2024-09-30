@@ -28,7 +28,8 @@ public class RedisSubscriber implements MessageListener{
         log.info("구독자 전송 전 message: {}", tmpMessage);
         try {
             PublishMessage publishMessage = obejctMapper.readValue(tmpMessage, PublishMessage.class);
-            messageTemplate.convertAndSend("/sub/chats" + publishMessage.getRoomId(), publishMessage);
+
+            messageTemplate.convertAndSend("/sub/chats/" + publishMessage.getRoomId(), publishMessage);
             log.info("구독자 전송 후 message: {}", publishMessage.getContent());
         } catch (JsonProcessingException e) {
             e.printStackTrace();
