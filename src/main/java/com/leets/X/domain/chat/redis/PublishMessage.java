@@ -5,6 +5,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.antlr.v4.runtime.misc.NotNull;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 /*
 * PublishMessage
 * Redis의 pub/sub 과정 데이터를 주고 받을 때, 사용할 직렬화 클래스
@@ -14,9 +17,9 @@ import org.antlr.v4.runtime.misc.NotNull;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PublishMessage {
+public class PublishMessage implements Serializable {
 
-
+    @Serial
     private static final long serialVersionUID = 2082503192322391880L;
 
     @NotNull
