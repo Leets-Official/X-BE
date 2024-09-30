@@ -1,4 +1,4 @@
-package com.leets.X.global.exception;
+package com.leets.X.global.common.exception;
 
 import lombok.Getter;
 

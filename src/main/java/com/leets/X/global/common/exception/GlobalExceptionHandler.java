@@ -1,4 +1,4 @@
-package com.leets.X.global.exception;
+package com.leets.X.global.common.exception;
 
 import com.leets.X.global.common.response.ResponseDto;
 import lombok.extern.slf4j.Slf4j;
