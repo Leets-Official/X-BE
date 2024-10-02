@@ -2,6 +2,7 @@ package com.leets.X.domain.chat.redis;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.leets.X.domain.chat.dto.PublishMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.connection.Message;
@@ -22,11 +23,12 @@ public class RedisSubscriber implements MessageListener{
 
     @Override
     public void onMessage(Message message, byte[] pattern) {
-        // 역 직렬화 문자열
+        // 역직렬화 문자열
         String tmpMessage = redisTemplate.getStringSerializer().deserialize(message.getBody());
 
         log.info("구독자 전송 전 message: {}", tmpMessage);
         try {
+            // 역직렬화한 문자열을 PublishMessage로 변환
             PublishMessage publishMessage = obejctMapper.readValue(tmpMessage, PublishMessage.class);
 
             messageTemplate.convertAndSend("/sub/chats/" + publishMessage.getRoomId(), publishMessage);
