@@ -1,9 +1,8 @@
-package com.leets.X.domain.chat.redis;
+package com.leets.X.domain.chat.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.antlr.v4.runtime.misc.NotNull;
 
 import java.io.Serial;
 import java.io.Serializable;
