@@ -27,12 +27,4 @@ public class PublishMessage implements Serializable {
 
     private String content;
 
-//
-//    LocalDateTime 역직렬화 에러
-//    @JsonSerialize(using = LocalDateTimeSerializer.class)
-//    @JsonDeserialize(using = LocalDateDeserializer.class)
-//    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-//    private LocalDateTime createAt;
-//
-//
 }
