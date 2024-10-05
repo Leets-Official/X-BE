@@ -1,6 +1,7 @@
 package com.leets.X.global.auth.google;
 
 import com.leets.X.global.auth.google.dto.GoogleTokenResponse;
+import com.leets.X.global.auth.google.dto.GoogleUserInfoResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,6 +30,8 @@ public class AuthService {
     private String grantType;
     @Value("${google.token-uri}")
     private String tokenUri;
+    @Value("${google.user-info-uri}")
+    private String userInfoUri;
 
 
     public GoogleTokenResponse getGoogleAccessToken(String code) {
@@ -49,6 +52,14 @@ public class AuthService {
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .retrieve()
                 .body(GoogleTokenResponse.class);
+    }
+
+    public GoogleUserInfoResponse getGoogleUserInfo(String accessToken) {
+        return restClient.get()
+                .uri(userInfoUri)
+                .header("Authorization", "Bearer " + accessToken)
+                .retrieve()
+                .body(GoogleUserInfoResponse.class);
     }
 
 }
