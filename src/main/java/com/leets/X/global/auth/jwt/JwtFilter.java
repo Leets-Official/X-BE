@@ -24,9 +24,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        log.info("jwtfilter 실행");
         String token = getToken(request);
-        log.info("jwtfilter token: {}", token);
 
         try {
             if (token != null) {
@@ -38,7 +36,6 @@ public class JwtFilter extends OncePerRequestFilter {
         } catch (JwtException e) {
             log.info("error token: {}", e.getMessage());
             request.setAttribute("jwtException", INVALID_TOKEN.getCode());
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
         filterChain.doFilter(request, response);
     }

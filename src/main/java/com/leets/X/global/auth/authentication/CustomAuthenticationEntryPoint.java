@@ -24,7 +24,6 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
         Integer exceptionCode = (Integer) request.getAttribute("jwtException");
-        log.info("exception: {}", exceptionCode);
 
         /*
             * exceptionCode가 null이 아니라면 토큰 유효성 검사를 실패한 것이기 때문에 따로 처리
