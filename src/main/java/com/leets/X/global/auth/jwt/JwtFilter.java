@@ -30,7 +30,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
         try {
             if (token != null) {
-                jwtProvider.validateToken(token, request);
+                jwtProvider.validateToken(token);
 
                 Authentication authentication = jwtProvider.getAuthentication(token);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -38,6 +38,7 @@ public class JwtFilter extends OncePerRequestFilter {
         } catch (JwtException e) {
             log.info("error token: {}", e.getMessage());
             request.setAttribute("jwtException", INVALID_TOKEN.getCode());
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
         filterChain.doFilter(request, response);
     }

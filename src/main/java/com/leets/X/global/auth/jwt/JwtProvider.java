@@ -2,7 +2,6 @@ package com.leets.X.global.auth.jwt;
 
 import io.jsonwebtoken.*;
 import jakarta.annotation.PostConstruct;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -58,7 +57,7 @@ public class JwtProvider {
                 .getBody();
     }
 
-    public void validateToken(String token, HttpServletRequest request) {
+    public void validateToken(String token) {
         try {
             parseToken(token);
         } catch (ExpiredJwtException e) {
