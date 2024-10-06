@@ -44,9 +44,9 @@ public class JwtProvider {
     }
 
     // 이렇게 만들거나 UUID로 만들어서 레디스에 저장하기
-    public String generateRefreshToken(String email) {
-        String refreshToken = UUID.randomUUID().toString();
-        return refreshToken;
+    public String generateRefreshToken() {
+        return UUID.randomUUID().toString();
+
     }
 
     public Claims parseToken(String token) {
