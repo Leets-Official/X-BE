@@ -24,15 +24,11 @@ public class ChatMessage extends BaseTimeEntity {
 
     private String content;
 
-    // 메시지는 수정할 수 X -> BaseEntity 상속 X
-    private LocalDateTime createdAt;
-
     public static ChatMessage of(PublishMessage publishMessage) {
         return ChatMessage.builder()
                 .roomId(publishMessage.getRoomId())
                 .senderId(publishMessage.getSenderId())
                 .content(publishMessage.getContent())
-                .createdAt(LocalDateTime.now())
                 .build();
     }
 
