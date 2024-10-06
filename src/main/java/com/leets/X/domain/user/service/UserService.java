@@ -1,4 +1,4 @@
-package com.leets.X.domain.user.servie;
+package com.leets.X.domain.user.service;
 
 import com.leets.X.domain.user.domain.User;
 import com.leets.X.domain.user.dto.response.UserSocialLoginResponse;
@@ -14,8 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.leets.X.domain.user.domain.enums.LoginStatus.LOGIN;
-import static com.leets.X.domain.user.domain.enums.LoginStatus.REGISTER;
+import static com.leets.X.domain.user.service.LoginStatus.LOGIN;
+import static com.leets.X.domain.user.service.LoginStatus.REGISTER;
 
 @Slf4j
 @Service

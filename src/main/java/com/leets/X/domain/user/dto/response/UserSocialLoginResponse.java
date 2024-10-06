@@ -1,6 +1,6 @@
 package com.leets.X.domain.user.dto.response;
 
-import com.leets.X.domain.user.domain.enums.LoginStatus;
+import com.leets.X.domain.user.service.LoginStatus;
 import com.leets.X.global.auth.jwt.JwtResponse;
 import lombok.Builder;
 

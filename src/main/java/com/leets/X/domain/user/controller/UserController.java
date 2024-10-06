@@ -1,9 +1,9 @@
 package com.leets.X.domain.user.controller;
 
-import com.leets.X.domain.user.domain.enums.LoginStatus;
+import com.leets.X.domain.user.service.LoginStatus;
 import com.leets.X.domain.user.dto.request.UserSocialLoginRequest;
 import com.leets.X.domain.user.dto.response.UserSocialLoginResponse;
-import com.leets.X.domain.user.servie.UserService;
+import com.leets.X.domain.user.service.UserService;
 import com.leets.X.global.common.response.ResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
