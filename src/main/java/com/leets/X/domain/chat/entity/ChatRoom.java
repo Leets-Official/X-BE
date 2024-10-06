@@ -27,8 +27,5 @@ public class ChatRoom extends BaseTimeEntity {
     @JoinColumn(name = "user2_id")
     private User user2;
 
-//    private String Message;
-
-//    private LocalDateTime lastMessageTime;
-
+    private String lastMessage;
 }
