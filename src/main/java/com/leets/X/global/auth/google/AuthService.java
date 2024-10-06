@@ -3,7 +3,6 @@ package com.leets.X.global.auth.google;
 import com.leets.X.global.auth.google.dto.GoogleTokenResponse;
 import com.leets.X.global.auth.google.dto.GoogleUserInfoResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -15,11 +14,9 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 
 @Service
-@Slf4j
 @RequiredArgsConstructor
 public class AuthService {
 
-    private final RestClient restClient = RestClient.builder().build();
     @Value("${google.client-id}")
     private String clientId;
     @Value("${google.client-secret}")
@@ -33,11 +30,12 @@ public class AuthService {
     @Value("${google.user-info-uri}")
     private String userInfoUri;
 
+    private final RestClient restClient = RestClient.create();
 
-    public GoogleTokenResponse getGoogleAccessToken(String code) {
-
+    public GoogleTokenResponse getGoogleAccessToken(String authCode) {
         // 디코딩된 상태로 보내야 요청이 정상적으로 감
-        String decode = URLDecoder.decode(code, StandardCharsets.UTF_8);
+        String decode = URLDecoder.decode(authCode, StandardCharsets.UTF_8);
+
         // 요청 body를 application/x-www-form-urlencoded에 맞게 보내기 위해 MultiValueMap 사용
         MultiValueMap<String, String> bodyParams = new LinkedMultiValueMap<>();
         bodyParams.add("code", decode);
