@@ -2,6 +2,7 @@ package com.leets.X.domain.chat.entity;
 
 
 import com.leets.X.domain.chat.dto.PublishMessage;
+import com.leets.X.global.common.domain.BaseTimeEntity;
 import jakarta.persistence.Id;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,7 +13,7 @@ import java.time.LocalDateTime;
 @Document
 @Getter
 @Builder
-public class ChatMessage {
+public class ChatMessage extends BaseTimeEntity {
 
     @Id
     private Long id; // MongoDb에서 사용하는 ObjectId
