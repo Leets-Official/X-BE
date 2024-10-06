@@ -3,10 +3,7 @@ package com.leets.X.domain.user.domain;
 import com.leets.X.domain.user.domain.enums.Gender;
 import com.leets.X.global.common.domain.BaseTimeEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -16,6 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
+@Getter
 public class User extends BaseTimeEntity {
 
     @Id
@@ -23,7 +21,7 @@ public class User extends BaseTimeEntity {
     @Column(name = "user_id")
     private Long id;
 
-    private String password;
+    //private String password; // 소셜로그인 구현에는 필요 x
 
     private String customId;
 
