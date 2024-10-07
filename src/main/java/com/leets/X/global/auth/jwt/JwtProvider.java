@@ -1,5 +1,6 @@
 package com.leets.X.global.auth.jwt;
 
+import com.leets.X.global.auth.jwt.dto.JwtResponse;
 import io.jsonwebtoken.*;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;

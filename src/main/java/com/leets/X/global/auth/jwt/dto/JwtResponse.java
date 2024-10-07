@@ -1,4 +1,4 @@
-package com.leets.X.global.auth.jwt;
+package com.leets.X.global.auth.jwt.dto;
 
 import lombok.Builder;
 

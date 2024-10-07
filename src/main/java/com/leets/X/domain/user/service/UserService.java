@@ -8,7 +8,7 @@ import com.leets.X.global.auth.google.AuthService;
 import com.leets.X.global.auth.google.dto.GoogleTokenResponse;
 import com.leets.X.global.auth.google.dto.GoogleUserInfoResponse;
 import com.leets.X.global.auth.jwt.JwtProvider;
-import com.leets.X.global.auth.jwt.JwtResponse;
+import com.leets.X.global.auth.jwt.dto.JwtResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
