@@ -1,6 +1,7 @@
 package com.leets.X.domain.user.service;
 
 import com.leets.X.domain.user.domain.User;
+import com.leets.X.domain.user.dto.request.UserInitializeRequest;
 import com.leets.X.domain.user.dto.response.UserSocialLoginResponse;
 import com.leets.X.domain.user.exception.UserNotFoundException;
 import com.leets.X.domain.user.repository.UserRepository;
@@ -26,6 +27,9 @@ public class UserService {
     private final JwtProvider jwtProvider;
     private final UserRepository userRepository;
 
+    /*
+        * 소셜 로그인
+     */
     @Transactional
     public UserSocialLoginResponse authenticate(String authCode) {
         GoogleTokenResponse token = authService.getGoogleAccessToken(authCode);
@@ -39,9 +43,18 @@ public class UserService {
         return registerUser(userInfo);
     }
 
+    /*
+        * 회원가입 시 초기 정보 입력
+     */
+    @Transactional
+    public void initProfile(UserInitializeRequest dto, String email){
+        User user = find(email);
+
+        user.initProfile(dto);
+    }
+
     private UserSocialLoginResponse loginUser(String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(UserNotFoundException::new);
+        User user = find(email);
 
         return new UserSocialLoginResponse(user.getId(), LOGIN, generateToken(email));
     }
@@ -62,6 +75,15 @@ public class UserService {
                 .accessToken(jwtProvider.generateAccessToken(email))
                 .refreshToken(jwtProvider.generateRefreshToken())
                 .build();
+    }
+
+    /*
+        * userRepository에서 사용자를 검색하는 메서드
+        * 공통으로 사용되는 부분이 많기 때문에 별도로 분리
+     */
+    private User find(String email){
+        return userRepository.findByEmail(email)
+                .orElseThrow(UserNotFoundException::new);
     }
 
 }
