@@ -28,7 +28,7 @@ public class SwaggerConfig {
 
         return new OpenAPI()
                 .addServersItem(new Server().url("/"))
-                .components(new Components().addSecuritySchemes("jwt token", securityScheme))
+                .components(new Components().addSecuritySchemes("bearerAuth", securityScheme))
                 .security(List.of(securityRequirement));
     }
 
@@ -38,6 +38,6 @@ public class SwaggerConfig {
     }
 
     private SecurityRequirement getSecurityRequireMent() {
-        return new SecurityRequirement().addList("bearer");
+        return new SecurityRequirement().addList("bearerAuth");
     }
 }

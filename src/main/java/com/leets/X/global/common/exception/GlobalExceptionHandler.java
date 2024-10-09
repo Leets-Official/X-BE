@@ -1,12 +1,14 @@
-package com.leets.X.global.exception;
+package com.leets.X.global.common.exception;
 
 import com.leets.X.global.common.response.ResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.client.HttpClientErrorException;
 
 @Slf4j
 @RestControllerAdvice
@@ -63,6 +65,25 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ResponseDto<Void>> handle(IllegalArgumentException e) {
         int statusCode = 400;
+
+        log.warn(e.getMessage(), e);
+        log.warn(LOG_FORMAT, e.getClass().getSimpleName(), statusCode, e.getMessage());
+
+        ResponseDto<Void> response = ResponseDto.errorResponse(statusCode, e.getMessage());
+
+        return ResponseEntity
+                .status(statusCode) // 실제 HTTP 상태 코드 설정
+                .body(response);
+    }
+
+    // 소셜 로그인 중 발생할 수 있는 예외. 구글 서버로 API 요청 후 응답이 400일 경우
+    @ExceptionHandler(HttpClientErrorException.class)
+    public ResponseEntity<ResponseDto<Void>> handle(HttpClientErrorException e) {
+        int statusCode = 400;
+
+        if(e instanceof ErrorResponse){
+            statusCode = ((ErrorResponse) e).getStatusCode().value();
+        }
 
         log.warn(e.getMessage(), e);
         log.warn(LOG_FORMAT, e.getClass().getSimpleName(), statusCode, e.getMessage());
