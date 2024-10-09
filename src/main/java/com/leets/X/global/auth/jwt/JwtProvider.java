@@ -87,8 +87,8 @@ public class JwtProvider {
 
     public Authentication getAuthentication(String token) {
         Claims claims = parseToken(token);
-        String username = claims.getSubject();
+        String email = claims.getSubject();
 
-        return new UsernamePasswordAuthenticationToken(username, null, Collections.emptyList());
+        return new UsernamePasswordAuthenticationToken(email, null, Collections.emptyList());
     }
 }
