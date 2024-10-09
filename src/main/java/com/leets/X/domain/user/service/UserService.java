@@ -35,8 +35,10 @@ public class UserService {
         GoogleTokenResponse token = authService.getGoogleAccessToken(authCode);
         GoogleUserInfoResponse userInfo = authService.getGoogleUserInfo(token.access_token());
 
+        String email = userInfo.email();
+
         // 가입된 유저라면 로그인
-        if (userRepository.existsByEmail(userInfo.email())){
+        if (existUser(email)){
             return loginUser(userInfo.email());
         }
         // 아니라면 회원가입
@@ -81,9 +83,13 @@ public class UserService {
         * userRepository에서 사용자를 검색하는 메서드
         * 공통으로 사용되는 부분이 많기 때문에 별도로 분리
      */
-    private User find(String email){
+    public User find(String email){
         return userRepository.findByEmail(email)
                 .orElseThrow(UserNotFoundException::new);
+    }
+
+    public boolean existUser(String email){
+        return userRepository.existsByEmail(email);
     }
 
 }
