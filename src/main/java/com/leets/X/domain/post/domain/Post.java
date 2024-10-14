@@ -3,10 +3,7 @@ package com.leets.X.domain.post.domain;
 import com.leets.X.domain.comment.domain.Comment;
 import com.leets.X.global.common.domain.BaseTimeEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,6 +12,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
+@Getter
 public class Post extends BaseTimeEntity {
 
     @Id
@@ -31,8 +29,15 @@ public class Post extends BaseTimeEntity {
 
     private LocalDateTime deletedAt;
 
+    private Integer likesCount; // 좋아요 수 추가
+
+    @Column(updatable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
+
+
     @OneToMany(mappedBy = "post")
     private List<Comment> commentList;
-
 //    private List<Image> imageList;
+
+
 }
