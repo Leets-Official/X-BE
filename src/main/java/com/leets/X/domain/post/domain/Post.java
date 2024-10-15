@@ -31,9 +31,6 @@ public class Post extends BaseTimeEntity {
 
     private Integer likesCount; // 좋아요 수 추가
 
-    @Column(updatable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
-
 
     @OneToMany(mappedBy = "post")
     private List<Comment> commentList;
