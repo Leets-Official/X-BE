@@ -1,5 +1,6 @@
 package com.leets.X.domain.user.domain;
 
+import com.leets.X.domain.post.domain.Post;
 import com.leets.X.domain.user.domain.enums.Gender;
 import com.leets.X.domain.user.dto.request.UserInitializeRequest;
 import com.leets.X.global.common.domain.BaseTimeEntity;
@@ -7,6 +8,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 // mysql에서 user 테이블이 존재 하기 때문에 다른 이름으로 지정
@@ -43,6 +46,9 @@ public class User extends BaseTimeEntity {
     private String webSite;
 
     private String introduce;
+
+    @OneToMany(mappedBy = "user")
+    private List<Post> posts = new ArrayList<>();
 
 //    private Image image;
 
