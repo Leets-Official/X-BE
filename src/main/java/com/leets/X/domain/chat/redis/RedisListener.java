@@ -7,11 +7,11 @@ import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 
 @Configuration
 @RequiredArgsConstructor
-public class RedisMessageListener {
+public class RedisListener {
 
     private final RedisMessageListenerContainer redisMessageListener;
     private final RedisSubscriber redisSubscriber;
-
+    
     public void adaptMessageListener(Long roomId) {
         ChannelTopic topic = new ChannelTopic("/sub/chats/" + roomId);
         redisMessageListener.addMessageListener(redisSubscriber, topic);
