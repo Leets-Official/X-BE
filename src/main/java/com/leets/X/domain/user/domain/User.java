@@ -1,7 +1,7 @@
 package com.leets.X.domain.user.domain;
 
-import com.leets.X.domain.user.domain.enums.Gender;
 import com.leets.X.domain.user.dto.request.UserInitializeRequest;
+import com.leets.X.domain.user.dto.request.UserUpdateRequest;
 import com.leets.X.global.common.domain.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -28,11 +28,11 @@ public class User extends BaseTimeEntity {
 
     private String name;
 
-    private Gender gender;
+//    private Gender gender;
 
     private String email;
 
-    private String phoneNum;
+//    private String phoneNum;
 
     private LocalDate birth;
 
@@ -49,6 +49,13 @@ public class User extends BaseTimeEntity {
     public void initProfile(UserInitializeRequest dto){
         this.birth = dto.birth();
         this.customId = dto.customId();
+    }
+
+    public void update(UserUpdateRequest dto){
+        this.name = dto.name();
+        this.introduce = dto.introduce();
+        this.location = dto.location();
+        this.webSite = dto.webSite();
     }
 
 }
