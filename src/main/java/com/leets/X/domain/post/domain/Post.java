@@ -3,6 +3,7 @@ package com.leets.X.domain.post.domain;
 import com.leets.X.domain.comment.domain.Comment;
 import com.leets.X.domain.image.domain.Image;
 import com.leets.X.domain.like.domain.Like;
+import com.leets.X.domain.post.domain.enums.IsDeleted;
 import com.leets.X.domain.user.domain.User;
 import com.leets.X.global.common.domain.BaseTimeEntity;
 import jakarta.persistence.*;
@@ -43,7 +44,7 @@ public class Post extends BaseTimeEntity {
 
     private Integer views;
 
-    private Boolean isDeleted;
+    private IsDeleted isDeleted;
 
     private LocalDateTime deletedAt;
 
