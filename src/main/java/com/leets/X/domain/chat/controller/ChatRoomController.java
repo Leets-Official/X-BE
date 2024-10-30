@@ -7,14 +7,13 @@ import com.leets.X.domain.chat.service.ChatRoomService;
 import com.leets.X.global.common.response.ResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
+@RestController
 @Slf4j
 @Validated
-@RequestMapping("/api/v1/chatRoom")
+@RequestMapping("/api/v1")
 @RequiredArgsConstructor
 public class ChatRoomController {
 
@@ -26,16 +25,19 @@ public class ChatRoomController {
 
     }
 
-    @PostMapping
+    @PostMapping("/chatRoom")
     public ResponseDto<ChatRoomResponseDto> createChatRoom(@RequestBody ChatRoomRequestDto chatRoomRequestDto){
         ChatRoomResponseDto response = chatRoomService.save(chatRoomRequestDto);
         return ResponseDto.response(200, "Successfully create ChatRoom!", response);
     }
 
-//    @GetMapping("/{roomId}")
-//    public ResponseDto<ChatRoomResponseDto> findChatRoom(@PathVariable("roomNo") Integer roomNo){
-//        ChatRoomResponseDto response = new ChatRoomResponseDto(1L);
-//        return ResponseDto.response(200, "Successfully return ChatRoom", response);
-//    }
+    // 채팅방 하나를 조회해준다. (대화 내용을 돌려준다는 의미)
+    @GetMapping("/chatRoom")
+    public ResponseDto<ChatRoomResponseDto> findChatRoom(
+                                    @RequestParam Long roomId, @RequestParam int size, @RequestParam int page ){
+        chatRoomService.findByChatRoom(roomId, size, page);
+        ChatRoomResponseDto response = new ChatRoomResponseDto(1L);
+        return ResponseDto.response(200, "Successfully return ChatRoom", response);
+    }
 
 }
