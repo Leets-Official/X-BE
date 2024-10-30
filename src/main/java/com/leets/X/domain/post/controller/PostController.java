@@ -39,5 +39,20 @@ public class PostController {
         return ResponseEntity.ok(response);
     }
 
+    // 글 생성
+    @PostMapping("/post")
+    public ResponseEntity<ResponseDto<PostResponseDto>> createPost(@RequestBody PostRequestDTO postRequestDTO, @RequestParam Long userId) {
 
-}
+        ResponseDto<PostResponseDto> response = postService.createPost(postRequestDTO, userId);
+        return ResponseEntity.ok(response);
+    }
+
+    // 게시물에 좋아요 추가
+    @PostMapping("/{postId}/like")
+    public ResponseEntity<ResponseDto<String>> addLike(@PathVariable Long postId, @RequestParam Long userId) {
+
+        ResponseDto<String> response = postService.addLike(postId, userId);
+        return ResponseEntity.ok(response);
+    }
+
+    }
