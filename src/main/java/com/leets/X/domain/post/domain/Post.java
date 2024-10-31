@@ -53,5 +53,10 @@ public class Post extends BaseTimeEntity {
         return this.likes.size();
     }
 
-
+    //service에서 글의 상태를 삭제 상태로 바꾸기 위한 메서드
+    public void delete() {
+        if (this.isDeleted == IsDeleted.ACTIVE) { // 이미 삭제 상태가 아닐 때만 변경
+            this.isDeleted = IsDeleted.DELETED;
+        }
+    }
 }
