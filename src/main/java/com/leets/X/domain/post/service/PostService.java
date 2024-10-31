@@ -113,4 +113,50 @@ public class PostService {
 
         return ResponseDto.response(200, "게시물에 좋아요가 추가되었습니다.");
     }
+
+    //게시물 삭제 & 좋아요 취소 로직 구현
+    //게시물 삭제
+
+    @Transactional
+    public ResponseDto<String> deletePost(Long postId, Long userId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("존재하지 않는 게시물입니다."));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("존재하지 않는 사용자입니다."));
+
+        // 게시물의 소유자인지 확인
+        if (!post.getUser().equals(user)) {
+            return ResponseDto.response(403, "게시물을 삭제할 권한이 없습니다.");
+        }
+
+        // 게시물 상태를 삭제 상태로 변경
+        post.delete(); // delete 메서드 호출로 상태를 변경
+        postRepository.save(post); // 상태 업데이트
+
+        return ResponseDto.response(200, "게시물이 성공적으로 삭제되었습니다.");
+    }
+
+    // 좋아요 취소
+    @Transactional
+    public ResponseDto<String> cancelLike(Long postId, Long userId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("존재하지 않는 게시물입니다."));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("존재하지 않는 사용자입니다."));
+
+        // 해당 사용자의 좋아요 찾기
+        Optional<Like> like = post.getLikes().stream()
+                .filter(l -> l.getUser().equals(user))
+                .findFirst();
+
+        if (like.isEmpty()) {
+            return ResponseDto.response(400, "좋아요가 눌리지 않은 게시물입니다.");
+        }
+
+        // 좋아요 삭제
+        post.getLikes().remove(like.get());
+        postRepository.save(post); // 업데이트
+
+        return ResponseDto.response(200, "좋아요가 취소되었습니다.");
+    }
 }
