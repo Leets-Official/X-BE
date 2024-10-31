@@ -55,4 +55,19 @@ public class PostController {
         return ResponseEntity.ok(response);
     }
 
+    // 게시물 삭제
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<ResponseDto<String>> deletePost(@PathVariable Long postId, @RequestParam Long userId) {
+        ResponseDto<String> response = postService.deletePost(postId, userId);
+        return ResponseEntity.ok(response);
     }
+
+    // 좋아요 취소
+    @DeleteMapping("/{postId}/like")
+    public ResponseEntity<ResponseDto<String>> cancelLike(@PathVariable Long postId, @RequestParam Long userId) {
+        ResponseDto<String> response = postService.cancelLike(postId, userId);
+        return ResponseEntity.ok(response);
+    }
+
+
+}
