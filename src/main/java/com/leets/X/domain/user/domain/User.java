@@ -1,5 +1,6 @@
 package com.leets.X.domain.user.domain;
 
+import com.leets.X.domain.like.domain.Like;
 import com.leets.X.domain.post.domain.Post;
 import com.leets.X.domain.user.domain.enums.Gender;
 import com.leets.X.domain.user.dto.request.UserInitializeRequest;
@@ -50,6 +51,8 @@ public class User extends BaseTimeEntity {
     @OneToMany(mappedBy = "user")
     private List<Post> posts = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<Like> likes = new ArrayList<>();
 //    private Image image;
 
     public void initProfile(UserInitializeRequest dto){
