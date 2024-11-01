@@ -50,8 +50,8 @@ public class SecurityConfig {
                         authorize ->
                                 authorize
                                         .requestMatchers("/v3/api-docs", "/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**", "/swagger/**").permitAll()
-                                        .requestMatchers("/api/v1/users/login").permitAll()
-                                        .requestMatchers("/api/v1/chatRoom").permitAll()
+                                        .requestMatchers("/api/v1/users/login", "/api/v1/chatRoom").permitAll()
+                                        .requestMatchers("/api/v1/chatRoom/**", "/ws","/ws/**").permitAll()
                                         .anyRequest().authenticated()
 
                 )
@@ -82,6 +82,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         configuration.addAllowedOriginPattern("http://localhost:3000");
+        configuration.addAllowedOriginPattern("http://127.0.0.1:5500"); // HTML Live Server CORS 설정
         configuration.addAllowedMethod("*");
         configuration.addAllowedHeader("*");
         configuration.addExposedHeader("Authorization");
