@@ -31,7 +31,7 @@ public class ChatRoomController {
 
     @PostMapping
     public ResponseDto<ChatRoomResponseDto> createChatRoom(@RequestBody ChatRoomRequestDto chatRoomRequestDto){
-        ChatRoomResponseDto response = chatRoomService.save(chatRoomRequestDto);
+        ChatRoomResponseDto response = chatRoomService.saveChatRoom(chatRoomRequestDto);
         return ResponseDto.response(CHATROOM_CREATE_SUCCESS.getCode(), CHATROOM_CREATE_SUCCESS.getMessage(), response);
     }
 
@@ -39,7 +39,7 @@ public class ChatRoomController {
     @GetMapping
     public ResponseDto<ChattingDto> findChatRoom(
                                     @RequestParam Long roomId, @RequestParam int size, @RequestParam int page ){
-        ChattingDto response = chatRoomService.findByChatRoom(roomId, size, page);
+        ChattingDto response = chatRoomService.getChatRoom(roomId, size, page);
         return ResponseDto.response(GET_CHATROOM.getCode(), GET_CHATROOM.getMessage(), response);
     }
 

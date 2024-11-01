@@ -32,7 +32,7 @@ public class ChatRoomService {
     private final ChatMessageRepository chatMessageRepository;
     private final UserRepository userRepository;
 
-    public ChatRoomResponseDto save(ChatRoomRequestDto chatRoomRequestDto) {
+    public ChatRoomResponseDto saveChatRoom(ChatRoomRequestDto chatRoomRequestDto) {
 
         // 이 부분은 UserService에 비지니스 로직을 추가 해달라고 한 뒤 or 추가하고 UserService 단에서 접근하는게 나을거 같다.
         Optional<User> user1 = userRepository.findById(chatRoomRequestDto.user1Id());
@@ -52,7 +52,7 @@ public class ChatRoomService {
         }
     }
 
-    public ChattingDto findByChatRoom(Long roomId, int size, int page) {
+    public ChattingDto getChatRoom(Long roomId, int size, int page) {
         ChatRoom findRoom = chatRoomRepository.findById(roomId)
                 .orElseThrow(NotFoundChatRoomException::new);
         User user1 = findRoom.getUser1();
