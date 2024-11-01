@@ -36,6 +36,7 @@ public class PostService {
     // 게시물 ID로 조회
     public ResponseDto<PostResponseDto> getPostResponse(Long id) {
         Post post = postRepository.findById(id)
+                .filter(p->p.getIsDeleted() == IsDeleted.ACTIVE) //삭제되지 않은 게시물만 조회가능하게끔 수정
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 게시물 입니다"));
         PostResponseDto postResponseDto = PostResponseDto.from(post);
         return ResponseDto.response(200, "게시물이 성공적으로 조회되었습니다.", postResponseDto);
@@ -109,6 +110,9 @@ public class PostService {
         // 새로운 좋아요 추가
         Like newLike = new Like(post, user);  // Like 엔티티의 생성자 사용
         post.getLikes().add(newLike);
+
+        //좋아요 수 업데이트
+        post.addLike();
         postRepository.save(post);
 
         return ResponseDto.response(200, "게시물에 좋아요가 추가되었습니다.");
@@ -155,6 +159,7 @@ public class PostService {
 
         // 좋아요 삭제
         post.getLikes().remove(like.get());
+        post.removeLike(); //좋아요 수 감소
         postRepository.save(post); // 업데이트
 
         return ResponseDto.response(200, "좋아요가 취소되었습니다.");
