@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ChatMessageService {
+public class PublishMessageService {
 
     private final RedisPublisher redisPublisher;
     private final ChatMessageRepository chatMessageRepository;
