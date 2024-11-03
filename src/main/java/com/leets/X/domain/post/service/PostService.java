@@ -12,15 +12,12 @@ import com.leets.X.domain.user.domain.User;
 import com.leets.X.domain.user.service.UserService;
 import com.leets.X.global.common.response.ResponseDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,17 +28,18 @@ public class PostService {
     private final UserService userService;
     private final LikeRepository likeRepository;
 
-
     // 게시물 ID로 조회
     public ResponseDto<PostResponseDto> getPostResponse(Long id) {
-        Post post = postRepository.findById(id)
-                .filter(p->p.getIsDeleted() == IsDeleted.ACTIVE) //삭제되지 않은 게시물만 조회가능하게끔 수정
-                .orElseThrow(() -> new RuntimeException("존재하지 않는 게시물 입니다"));
+        Post post = findPost(id);
+        // 삭제되지 않은 게시물만 조회 가능하게끔 수정
+        if (post.getIsDeleted() != IsDeleted.ACTIVE) {
+            throw new RuntimeException("존재하지 않는 게시물입니다.");
+        }
         PostResponseDto postResponseDto = PostResponseDto.from(post);
         return ResponseDto.response(ResponseMessage.GET_POST_SUCCESS.getCode(), ResponseMessage.GET_POST_SUCCESS.getMessage(), postResponseDto);
     }
 
-    //좋아요 수로 정렬한 게시물 조회 (직접 구현)
+    // 좋아요 수로 정렬한 게시물 조회 (직접 구현)
     public ResponseDto<List<PostResponseDto>> getPostsSortedByLikes() {
         List<Post> posts = postRepository.findAll(); // 모든 게시물 조회
 
@@ -53,7 +51,6 @@ public class PostService {
 
         return ResponseDto.response(ResponseMessage.GET_SORTED_BY_LIKES_SUCCESS.getCode(), ResponseMessage.GET_SORTED_BY_LIKES_SUCCESS.getMessage(), sortedPosts);
     }
-
 
     // 최신 게시물 조회
     public ResponseDto<List<PostResponseDto>> getLatestPosts() {
@@ -71,7 +68,7 @@ public class PostService {
         return ResponseDto.response(ResponseMessage.GET_LATEST_POST_SUCCESS.getCode(), ResponseMessage.GET_LATEST_POST_SUCCESS.getMessage(), postResponseDtos);
     }
 
-    //글 생성 (Refactoring)
+    // 글 생성 (Refactoring)
     @Transactional
     public ResponseDto<PostResponseDto> createPost(PostRequestDTO postRequestDTO, String email) {
         // 이메일로 사용자 조회
@@ -94,12 +91,10 @@ public class PostService {
         return ResponseDto.response(ResponseMessage.POST_SUCCESS.getCode(), ResponseMessage.POST_SUCCESS.getMessage(), postResponseDTO);
     }
 
-
-
+    //좋아요 추가
     @Transactional
     public ResponseDto<String> addLike(Long postId, String email) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new RuntimeException("존재하지 않는 게시물입니다."));
+        Post post = findPost(postId);
         User user = userService.find(email);
 
         // 좋아요가 이미 있는지 확인
@@ -117,15 +112,10 @@ public class PostService {
                 "좋아요가 추가되었습니다. 현재 좋아요 수: " + likeCount);
     }
 
-
-
-
-    //게시물 삭제
-
+    // 게시물 삭제
     @Transactional
     public ResponseDto<String> deletePost(Long postId, String email) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new RuntimeException("존재하지 않는 게시물입니다."));
+        Post post = findPost(postId);
         User user = userService.find(email);
 
         // 게시물의 소유자인지 확인
@@ -139,10 +129,10 @@ public class PostService {
 
         return ResponseDto.response(ResponseMessage.POST_DELETED_SUCCESS.getCode(), ResponseMessage.POST_DELETED_SUCCESS.getMessage());
     }
+
     @Transactional
     public ResponseDto<String> cancelLike(Long postId, String email) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new RuntimeException("존재하지 않는 게시물입니다."));
+        Post post = findPost(postId);
         User user = userService.find(email);
 
         // 좋아요 여부 확인 후 삭제
@@ -159,4 +149,9 @@ public class PostService {
                 "좋아요가 삭제되었습니다. 현재 좋아요 수: " + likeCount);
     }
 
+    // 자주 중복되는 코드 메서드로 뽑기
+    public Post findPost(Long postId) {
+        return postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("존재하지 않는 게시물입니다."));
+    }
 }
