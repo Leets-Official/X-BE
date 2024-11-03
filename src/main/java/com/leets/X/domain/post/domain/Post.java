@@ -50,11 +50,14 @@ public class Post extends BaseTimeEntity {
 
     // 좋아요 수를 관리하기 위한 필드
     // 좋아요 수를 관리하기 위한 필드
-    @Column(nullable = false) // null을 허용하지 않도록 설정
+    @Column
     private Integer likesCount = 0; // 기본값 설정
 
     // 서비스에서 좋아요 수를 조회하기 위한 메서드
     public int getLikesCount() {
+        if (likesCount == null) {
+            this.likesCount = 0;
+        }
         return this.likesCount;
     }
 
