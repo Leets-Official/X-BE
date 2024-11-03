@@ -1,13 +1,14 @@
 package com.leets.X.domain.post.service;
 
 import com.leets.X.domain.like.domain.Like;
+import com.leets.X.domain.post.controller.ResponseMessage;
 import com.leets.X.domain.post.domain.Post;
 import com.leets.X.domain.post.domain.enums.IsDeleted;
 import com.leets.X.domain.post.dto.request.PostRequestDTO;
 import com.leets.X.domain.post.dto.response.PostResponseDto;
 import com.leets.X.domain.post.repository.PostRepository;
 import com.leets.X.domain.user.domain.User;
-import com.leets.X.domain.user.repository.UserRepository;
+import com.leets.X.domain.user.service.UserService;
 import com.leets.X.global.common.response.ResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,16 +23,12 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class PostService {
 
     private final PostRepository postRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
 
-    @Autowired
-    public PostService(PostRepository postRepository, UserRepository userRepository) {
-        this.postRepository = postRepository;
-        this.userRepository = userRepository;
-    }
 
     // 게시물 ID로 조회
     public ResponseDto<PostResponseDto> getPostResponse(Long id) {
@@ -39,7 +36,7 @@ public class PostService {
                 .filter(p->p.getIsDeleted() == IsDeleted.ACTIVE) //삭제되지 않은 게시물만 조회가능하게끔 수정
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 게시물 입니다"));
         PostResponseDto postResponseDto = PostResponseDto.from(post);
-        return ResponseDto.response(200, "게시물이 성공적으로 조회되었습니다.", postResponseDto);
+        return ResponseDto.response(ResponseMessage.GET_POST_SUCCESS.getCode(), ResponseMessage.GET_POST_SUCCESS.getMessage(), postResponseDto);
     }
 
     //좋아요 수로 정렬한 게시물 조회 (직접 구현)
@@ -53,8 +50,9 @@ public class PostService {
         List<PostResponseDto> postResponseDtos = sortedPosts.stream()
                 .map(PostResponseDto::from)
                 .collect(Collectors.toList());
-        return ResponseDto.response(200, "게시물이 좋아요 수로 정렬되었습니다.", postResponseDtos);
+        return ResponseDto.response(ResponseMessage.GET_SORTED_BY_LIKES_SUCCESS.getCode(), ResponseMessage.GET_SORTED_BY_LIKES_SUCCESS.getMessage(), postResponseDtos);
     }
+
 
     // 최신 게시물 조회
     public ResponseDto<List<PostResponseDto>> getLatestPosts() {
@@ -69,14 +67,17 @@ public class PostService {
                         Math.abs(postResponseDto.getCreatedAt().until(now, java.time.temporal.ChronoUnit.SECONDS)))) // 현재 시각과의 차이를 기준으로 정렬
                 .collect(Collectors.toList());
 
-        return ResponseDto.response(200, "최신게시물이 조회되었습니다.", postResponseDtos);
+        return ResponseDto.response(ResponseMessage.GET_LATEST_POST_SUCCESS.getCode(), ResponseMessage.GET_LATEST_POST_SUCCESS.getMessage(), postResponseDtos);
     }
 
-    //글 생성
-    public ResponseDto<PostResponseDto> createPost(PostRequestDTO postRequestDTO, Long userId) {
-        // 사용자 조회
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("존재하지 않는 사용자입니다."));
+    //글 생성 (Refactoring)
+    public ResponseDto<PostResponseDto> createPost(PostRequestDTO postRequestDTO, String email) {
+        // 이메일로 사용자 조회
+        User user = userService.find(email); // JWT에서 추출한 이메일 사용
+        if (user == null) {
+            throw new RuntimeException("존재하지 않는 사용자입니다.");
+        }
+
         // Post 생성 후 기본 값 설정
         Post post = Post.builder()
                 .user(user)
@@ -85,20 +86,22 @@ public class PostService {
                 .isDeleted(IsDeleted.ACTIVE) // 기본값 ACTIVE로 설정
                 .build();
         Post savedPost = postRepository.save(post);
+
         // 저장된 게시글을 ResponseDto에 담아 반환
         PostResponseDto postResponseDTO = PostResponseDto.from(savedPost);
-        return ResponseDto.response(200, "게시물이 성공적으로 생성되었습니다.", postResponseDTO);
+        return ResponseDto.response(ResponseMessage.POST_SUCCESS.getCode(), ResponseMessage.POST_SUCCESS.getMessage(), postResponseDTO);
     }
+
 
 
     // 좋아요 추가
     @Transactional
-    public ResponseDto<String> addLike(Long postId, Long userId) {
+    public ResponseDto<String> addLike(Long postId, String email) {
         // 사용자 & 게시물 조회
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 게시물입니다."));
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("존재하지 않는 사용자입니다."));
+        User user = userService.find(email);
+
 
         // 이미 좋아요가 눌려 있는지 확인
         boolean alreadyLiked = post.getLikes().stream()
@@ -115,18 +118,17 @@ public class PostService {
         post.addLike();
         postRepository.save(post);
 
-        return ResponseDto.response(200, "게시물에 좋아요가 추가되었습니다.");
+        return ResponseDto.response(ResponseMessage.ADD_LIKE_SUCCESS.getCode(), ResponseMessage.ADD_LIKE_SUCCESS.getMessage());
     }
 
     //게시물 삭제 & 좋아요 취소 로직 구현
     //게시물 삭제
 
     @Transactional
-    public ResponseDto<String> deletePost(Long postId, Long userId) {
+    public ResponseDto<String> deletePost(Long postId, String email) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 게시물입니다."));
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("존재하지 않는 사용자입니다."));
+        User user = userService.find(email);
 
         // 게시물의 소유자인지 확인
         if (!post.getUser().equals(user)) {
@@ -137,17 +139,14 @@ public class PostService {
         post.delete(); // delete 메서드 호출로 상태를 변경
         postRepository.save(post); // 상태 업데이트
 
-        return ResponseDto.response(200, "게시물이 성공적으로 삭제되었습니다.");
+        return ResponseDto.response(ResponseMessage.POST_DELETED_SUCCESS.getCode(), ResponseMessage.POST_DELETED_SUCCESS.getMessage());
     }
-
     // 좋아요 취소
     @Transactional
-    public ResponseDto<String> cancelLike(Long postId, Long userId) {
+    public ResponseDto<String> cancelLike(Long postId, String email) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 게시물입니다."));
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("존재하지 않는 사용자입니다."));
-
+        User user = userService.find(email);
         // 해당 사용자의 좋아요 찾기
         Optional<Like> like = post.getLikes().stream()
                 .filter(l -> l.getUser().equals(user))
@@ -162,6 +161,7 @@ public class PostService {
         post.removeLike(); //좋아요 수 감소
         postRepository.save(post); // 업데이트
 
-        return ResponseDto.response(200, "좋아요가 취소되었습니다.");
+        return ResponseDto.response(ResponseMessage.LIKE_CANCEL_SUCCESS.getCode(), ResponseMessage.LIKE_CANCEL_SUCCESS.getMessage());
     }
+
 }
