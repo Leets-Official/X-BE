@@ -1,14 +1,17 @@
 package com.leets.X.domain.post.exception;
 
-public class PostNotFoundException extends RuntimeException {
+import com.leets.X.global.common.exception.BaseException;
+
+import static com.leets.X.domain.post.exception.ErrorMessage.POST_NOT_FOUND;
+import static com.leets.X.domain.user.exception.ErrorMessage.USER_NOT_FOUND;
+
+public class PostNotFoundException extends BaseException {
 
     public PostNotFoundException() {
-        super("해당 게시글을 찾을 수 없습니다.");
+        super(POST_NOT_FOUND.getCode(), POST_NOT_FOUND.getMessage());
     }
 
-    // 사용자 정의 메시지를 받을 수 있는 생성자
-    public PostNotFoundException(String message) {
-        super(message);
-    }
+
+
 
 }
