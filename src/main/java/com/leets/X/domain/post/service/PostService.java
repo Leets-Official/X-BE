@@ -1,6 +1,7 @@
 package com.leets.X.domain.post.service;
 
 import com.leets.X.domain.like.domain.Like;
+import com.leets.X.domain.like.repository.LikeRepository;
 import com.leets.X.domain.post.controller.ResponseMessage;
 import com.leets.X.domain.post.domain.Post;
 import com.leets.X.domain.post.domain.enums.IsDeleted;
@@ -28,6 +29,7 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final UserService userService;
+    private final LikeRepository likeRepository;
 
 
     // 게시물 ID로 조회
@@ -42,15 +44,14 @@ public class PostService {
     //좋아요 수로 정렬한 게시물 조회 (직접 구현)
     public ResponseDto<List<PostResponseDto>> getPostsSortedByLikes() {
         List<Post> posts = postRepository.findAll(); // 모든 게시물 조회
-        // 좋아요 수로 정렬
-        List<Post> sortedPosts = posts.stream()
+
+        List<PostResponseDto> sortedPosts = posts.stream()
+                .filter(post -> post.getIsDeleted() == IsDeleted.ACTIVE) // ACTIVE 상태만 필터링
                 .sorted(Comparator.comparing(Post::getLikesCount).reversed()) // 좋아요 수 기준으로 내림차순 정렬
+                .map(PostResponseDto::from) // DTO로 변환
                 .collect(Collectors.toList());
-        // DTO로 변환
-        List<PostResponseDto> postResponseDtos = sortedPosts.stream()
-                .map(PostResponseDto::from)
-                .collect(Collectors.toList());
-        return ResponseDto.response(ResponseMessage.GET_SORTED_BY_LIKES_SUCCESS.getCode(), ResponseMessage.GET_SORTED_BY_LIKES_SUCCESS.getMessage(), postResponseDtos);
+
+        return ResponseDto.response(ResponseMessage.GET_SORTED_BY_LIKES_SUCCESS.getCode(), ResponseMessage.GET_SORTED_BY_LIKES_SUCCESS.getMessage(), sortedPosts);
     }
 
 
@@ -94,34 +95,30 @@ public class PostService {
 
 
 
-    // 좋아요 추가
     @Transactional
     public ResponseDto<String> addLike(Long postId, String email) {
-        // 사용자 & 게시물 조회
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 게시물입니다."));
         User user = userService.find(email);
 
-
-        // 이미 좋아요가 눌려 있는지 확인
-        boolean alreadyLiked = post.getLikes().stream()
-                .anyMatch(like -> like.getUser().equals(user));
-        if (alreadyLiked) {
+        // 좋아요가 이미 있는지 확인
+        if (likeRepository.existsByPostAndUser(post, user)) {
             return ResponseDto.response(400, "이미 좋아요를 누른 게시물입니다.");
         }
 
-        // 새로운 좋아요 추가
-        Like newLike = new Like(post, user);  // Like 엔티티의 생성자 사용
-        post.getLikes().add(newLike);
+        // 새로운 Like 객체 생성 및 저장
+        Like newLike = new Like(post, user);
+        likeRepository.save(newLike);
 
-        //좋아요 수 업데이트
-        post.addLike();
-        postRepository.save(post);
-
-        return ResponseDto.response(ResponseMessage.ADD_LIKE_SUCCESS.getCode(), ResponseMessage.ADD_LIKE_SUCCESS.getMessage());
+        // 현재 좋아요 개수 반환
+        long likeCount = likeRepository.countByPost(post);
+        return ResponseDto.response(ResponseMessage.ADD_LIKE_SUCCESS.getCode(),
+                "좋아요가 추가되었습니다. 현재 좋아요 수: " + likeCount);
     }
 
-    //게시물 삭제 & 좋아요 취소 로직 구현
+
+
+
     //게시물 삭제
 
     @Transactional
@@ -141,27 +138,24 @@ public class PostService {
 
         return ResponseDto.response(ResponseMessage.POST_DELETED_SUCCESS.getCode(), ResponseMessage.POST_DELETED_SUCCESS.getMessage());
     }
-    // 좋아요 취소
     @Transactional
     public ResponseDto<String> cancelLike(Long postId, String email) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 게시물입니다."));
         User user = userService.find(email);
-        // 해당 사용자의 좋아요 찾기
-        Optional<Like> like = post.getLikes().stream()
-                .filter(l -> l.getUser().equals(user))
-                .findFirst();
 
-        if (like.isEmpty()) {
-            return ResponseDto.response(400, "좋아요가 눌리지 않은 게시물입니다.");
+        // 좋아요 여부 확인 후 삭제
+        if (!likeRepository.existsByPostAndUser(post, user)) {
+            return ResponseDto.response(400, "좋아요가 눌려 있지 않은 게시물입니다.");
         }
 
-        // 좋아요 삭제
-        post.getLikes().remove(like.get());
-        post.removeLike(); //좋아요 수 감소
-        postRepository.save(post); // 업데이트
+        // Like 객체 삭제
+        likeRepository.deleteByPostAndUser(post, user);
 
-        return ResponseDto.response(ResponseMessage.LIKE_CANCEL_SUCCESS.getCode(), ResponseMessage.LIKE_CANCEL_SUCCESS.getMessage());
+        // 현재 좋아요 개수 반환
+        long likeCount = likeRepository.countByPost(post);
+        return ResponseDto.response(ResponseMessage.LIKE_CANCEL_SUCCESS.getCode(),
+                "좋아요가 삭제되었습니다. 현재 좋아요 수: " + likeCount);
     }
 
 }

@@ -55,23 +55,9 @@ public class Post extends BaseTimeEntity {
 
     // 서비스에서 좋아요 수를 조회하기 위한 메서드
     public int getLikesCount() {
-        return this.likesCount != null ? this.likesCount : 0; // null 체크
+        return this.likesCount;
     }
 
-    // 좋아요 추가 메서드
-    public void addLike() {
-        if (this.likesCount == null) {
-            this.likesCount = 0; // null인 경우 0으로 초기화
-        }
-        this.likesCount++;
-    }
-
-    // 좋아요 제거 메서드
-    public void removeLike() {
-        if (this.likesCount != null && this.likesCount > 0) {
-            this.likesCount--;
-        }
-    }
 
     // 서비스에서 글의 상태를 삭제 상태로 바꾸기 위한 메서드
     public void delete() {
