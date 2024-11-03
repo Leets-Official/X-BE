@@ -72,6 +72,7 @@ public class PostService {
     }
 
     //글 생성 (Refactoring)
+    @Transactional
     public ResponseDto<PostResponseDto> createPost(PostRequestDTO postRequestDTO, String email) {
         // 이메일로 사용자 조회
         User user = userService.find(email); // JWT에서 추출한 이메일 사용
