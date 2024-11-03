@@ -20,11 +20,11 @@
         private Long id;
 
         @ManyToOne(fetch = FetchType.LAZY)
-        @JoinColumn(name = "postId")
+        @JoinColumn(name = "post_id")
         private Post post;
 
         @ManyToOne(fetch = FetchType.LAZY)
-        @JoinColumn(name = "userId")
+        @JoinColumn(name = "user_id")
         private User user;
 
         // 게시물과 사용자 정보를 받는 생성자 추가
