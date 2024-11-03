@@ -7,12 +7,13 @@ import com.leets.X.domain.post.service.PostService;
 import com.leets.X.global.common.response.ResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
 @RestController
-@RequestMapping("/posts")
+@RequestMapping("/api/v1/posts")
 @RequiredArgsConstructor
 public class PostController {
 
@@ -20,54 +21,47 @@ public class PostController {
 
     // 게시물 ID로 조회
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseDto<PostResponseDto>> getPost(@PathVariable Long id) {
-        ResponseDto<PostResponseDto> response = postService.getPostResponse(id);
-        return ResponseEntity.ok(response);
+    public ResponseDto<PostResponseDto> getPost(@PathVariable Long id) {
+        return postService.getPostResponse(id);
     }
 
     // 좋아요 수로 정렬한 게시물 조회
     @GetMapping("/likes")
-    public ResponseEntity<ResponseDto<List<PostResponseDto>>> getPostsSortedByLikes() {
-        ResponseDto<List<PostResponseDto>> response = postService.getPostsSortedByLikes();
-        return ResponseEntity.ok(response);
+    public ResponseDto<List<PostResponseDto>> getPostsSortedByLikes() {
+        return postService.getPostsSortedByLikes();
     }
 
     // 최신 게시물 조회
     @GetMapping("/latest")
-    public ResponseEntity<ResponseDto<List<PostResponseDto>>> getLatestPosts() {
-        ResponseDto<List<PostResponseDto>> response = postService.getLatestPosts();
-        return ResponseEntity.ok(response);
+    public ResponseDto<List<PostResponseDto>> getLatestPosts() {
+        return postService.getLatestPosts();
     }
 
     // 글 생성
     @PostMapping("/post")
-    public ResponseEntity<ResponseDto<PostResponseDto>> createPost(@RequestBody PostRequestDTO postRequestDTO, @RequestParam Long userId) {
-
-        ResponseDto<PostResponseDto> response = postService.createPost(postRequestDTO, userId);
-        return ResponseEntity.ok(response);
+    public ResponseDto<PostResponseDto> createPost(@RequestBody PostRequestDTO postRequestDTO, @AuthenticationPrincipal String email) {
+        // 인증된 사용자의 이메일을 `@AuthenticationPrincipal`을 통해 주입받음
+        return postService.createPost(postRequestDTO, email);
     }
 
     // 게시물에 좋아요 추가
     @PostMapping("/{postId}/like")
-    public ResponseEntity<ResponseDto<String>> addLike(@PathVariable Long postId, @RequestParam Long userId) {
-
-        ResponseDto<String> response = postService.addLike(postId, userId);
-        return ResponseEntity.ok(response);
+    public ResponseDto<String> addLike(@PathVariable Long postId, @AuthenticationPrincipal String email) {
+        return postService.addLike(postId, email);
     }
 
     // 게시물 삭제
     @DeleteMapping("/{postId}")
-    public ResponseEntity<ResponseDto<String>> deletePost(@PathVariable Long postId, @RequestParam Long userId) {
-        ResponseDto<String> response = postService.deletePost(postId, userId);
-        return ResponseEntity.ok(response);
+    public ResponseDto<String> deletePost(@PathVariable Long postId, @AuthenticationPrincipal String email) {
+        return postService.deletePost(postId, email);
     }
 
     // 좋아요 취소
     @DeleteMapping("/{postId}/like")
-    public ResponseEntity<ResponseDto<String>> cancelLike(@PathVariable Long postId, @RequestParam Long userId) {
-        ResponseDto<String> response = postService.cancelLike(postId, userId);
-        return ResponseEntity.ok(response);
+    public ResponseDto<String> cancelLike(@PathVariable Long postId, @AuthenticationPrincipal String email) {
+        return postService.cancelLike(postId, email);
     }
+
 
 
 }
