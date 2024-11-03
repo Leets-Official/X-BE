@@ -7,8 +7,10 @@ import com.leets.X.domain.post.domain.Post;
 import com.leets.X.domain.post.domain.enums.IsDeleted;
 import com.leets.X.domain.post.dto.request.PostRequestDTO;
 import com.leets.X.domain.post.dto.response.PostResponseDto;
+import com.leets.X.domain.post.exception.PostNotFoundException;
 import com.leets.X.domain.post.repository.PostRepository;
 import com.leets.X.domain.user.domain.User;
+import com.leets.X.domain.user.exception.UserNotFoundException;
 import com.leets.X.domain.user.service.UserService;
 import com.leets.X.global.common.response.ResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +35,7 @@ public class PostService {
         Post post = findPost(id);
         // 삭제되지 않은 게시물만 조회 가능하게끔 수정
         if (post.getIsDeleted() != IsDeleted.ACTIVE) {
-            throw new RuntimeException("존재하지 않는 게시물입니다.");
+            throw new PostNotFoundException();
         }
         PostResponseDto postResponseDto = PostResponseDto.from(post);
         return ResponseDto.response(ResponseMessage.GET_POST_SUCCESS.getCode(), ResponseMessage.GET_POST_SUCCESS.getMessage(), postResponseDto);
@@ -74,7 +76,7 @@ public class PostService {
         // 이메일로 사용자 조회
         User user = userService.find(email); // JWT에서 추출한 이메일 사용
         if (user == null) {
-            throw new RuntimeException("존재하지 않는 사용자입니다.");
+            throw new UserNotFoundException();
         }
 
         // Post 생성 후 기본 값 설정
@@ -152,6 +154,6 @@ public class PostService {
     // 자주 중복되는 코드 메서드로 뽑기
     public Post findPost(Long postId) {
         return postRepository.findById(postId)
-                .orElseThrow(() -> new RuntimeException("존재하지 않는 게시물입니다."));
+                .orElseThrow(() -> new PostNotFoundException());
     }
 }
