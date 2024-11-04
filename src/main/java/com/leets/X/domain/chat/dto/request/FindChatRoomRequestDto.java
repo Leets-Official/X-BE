@@ -1,7 +1,9 @@
 package com.leets.X.domain.chat.dto.request;
 
+import jakarta.validation.constraints.NotNull;
+
 public record FindChatRoomRequestDto(
 
-        Long user1Id,
-        Long user2Id
+        @NotNull Long user1Id,
+        @NotNull Long user2Id
 ){}

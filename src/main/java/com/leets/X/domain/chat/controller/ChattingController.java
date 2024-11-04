@@ -6,6 +6,7 @@ import com.leets.X.domain.chat.dto.response.ChattingListResponseDto;
 import com.leets.X.domain.chat.service.ChattingService;
 import com.leets.X.global.common.response.ResponseDto;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,7 +31,7 @@ public class ChattingController {
 
 
     @GetMapping("/chattingList")
-    public ResponseDto<List<ChattingListResponseDto>> findChattingList(@RequestParam Long userId){
+    public ResponseDto<List<ChattingListResponseDto>> findChattingList(@RequestParam @NotNull Long userId){
         List<ChattingListResponseDto> response = chattingService.getChattingList(userId);
         return ResponseDto.response(GET_CHATTING_LIST.getCode(), GET_CHATTING_LIST.getMessage(), response);
     }
