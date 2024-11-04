@@ -21,7 +21,7 @@ public class Image {
     private String url;
 
     @ManyToOne( fetch = FetchType.LAZY)
-    @JoinColumn(name = "postId")
+    @JoinColumn(name = "post_Id")
     private Post post;
 
 }
