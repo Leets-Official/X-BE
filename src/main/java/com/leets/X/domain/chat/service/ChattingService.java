@@ -42,7 +42,7 @@ public class ChattingService {
     }
 
     public List<ChattingListResponseDto> getChattingList(Long userId) { // 추후 JWT 파싱으로 받아내기.
-        List<ChatRoom> chatRooms = chatRoomRepository.findRoomIdByUserId(userId)
+        List<ChatRoom> chatRooms = chatRoomRepository.findRoomsByUserId(userId)
                 .orElseThrow(NotFoundChatRoomException::new);
 
         return chatRooms.stream()
