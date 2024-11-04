@@ -7,7 +7,10 @@ import com.leets.X.domain.post.domain.Post;
 import com.leets.X.domain.post.domain.enums.IsDeleted;
 import com.leets.X.domain.post.dto.request.PostRequestDTO;
 import com.leets.X.domain.post.dto.response.PostResponseDto;
+import com.leets.X.domain.post.exception.AlreadyLikedException;
+import com.leets.X.domain.post.exception.NotLikedException;
 import com.leets.X.domain.post.exception.PostNotFoundException;
+import com.leets.X.domain.post.exception.UnauthorizedPostDeletionException;
 import com.leets.X.domain.post.repository.PostRepository;
 import com.leets.X.domain.user.domain.User;
 import com.leets.X.domain.user.exception.UserNotFoundException;
@@ -79,7 +82,7 @@ public class PostService {
             throw new UserNotFoundException();
         }
 
-        Post post = Post.create(user, postRequestDTO.getContent()); // 글 생성 로직 캡슐화
+        Post post = Post.create(user, postRequestDTO.content()); // 글 생성 로직 캡슐화
         Post savedPost = postRepository.save(post);
 
         // 저장된 게시글을 ResponseDto에 담아 반환
@@ -95,7 +98,7 @@ public class PostService {
 
         // 좋아요가 이미 있는지 확인
         if (likeRepository.existsByPostAndUser(post, user)) {
-            return ResponseDto.response(400, "이미 좋아요를 누른 게시물입니다.");
+            throw new AlreadyLikedException();
         }
 
         // 새로운 Like 객체 생성 및 저장
@@ -116,7 +119,7 @@ public class PostService {
 
         // 게시물의 소유자인지 확인
         if (!post.getUser().equals(user)) {
-            return ResponseDto.response(403, "게시물을 삭제할 권한이 없습니다.");
+            throw new UnauthorizedPostDeletionException();
         }
 
         // 게시물 상태를 삭제 상태로 변경
@@ -133,7 +136,7 @@ public class PostService {
 
         // 좋아요 여부 확인 후 삭제
         if (!likeRepository.existsByPostAndUser(post, user)) {
-            return ResponseDto.response(400, "좋아요가 눌려 있지 않은 게시물입니다.");
+            throw new NotLikedException(); // 예외로 변경
         }
 
         // Like 객체 삭제
