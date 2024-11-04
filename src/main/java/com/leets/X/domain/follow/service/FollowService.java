@@ -3,7 +3,9 @@ package com.leets.X.domain.follow.service;
 import com.leets.X.domain.follow.domain.Follow;
 import com.leets.X.domain.follow.dto.response.FollowResponse;
 import com.leets.X.domain.follow.exception.AlreadyFollowException;
+import com.leets.X.domain.follow.exception.FollowNotFoundException;
 import com.leets.X.domain.follow.exception.InvalidFollowException;
+import com.leets.X.domain.follow.exception.InvalidUnfollowException;
 import com.leets.X.domain.follow.repository.FollowRepository;
 import com.leets.X.domain.user.domain.User;
 import com.leets.X.domain.user.service.UserService;
@@ -26,7 +28,7 @@ public class FollowService {
         User follower = userService.find(email);
         User followed = userService.find(userId);
 
-        check(follower.getId(), followed.getId());
+        validate(follower.getId(), followed.getId());
         // 저장
         Follow follow = followRepository.save(Follow.of(follower, followed));
     }
@@ -56,14 +58,37 @@ public class FollowService {
                 .toList();
     }
 
-    private void check(Long followerId, Long followedId){
+    // email -> userId 방향의 팔로우 객체 삭제
+    @Transactional
+    public void unfollow(Long userId, String email){
+        User follower = userService.find(email);
+        User followed = userService.find(userId);
+        // 팔로우 정보가 없는지 체크
+        Follow follow = check(follower.getId(), followed.getId());
+
+        followRepository.delete(follow);
+    }
+
+    public Follow find(Long followerId, Long followedId){
+        return followRepository.findByFollowerIdAndFollowedId(followerId, followedId)
+                .orElseThrow(FollowNotFoundException::new);
+    }
+
+    private void validate(Long followerId, Long followedId){
         if(followRepository.existsByFollowerIdAndFollowedId(followerId, followedId)){
             throw new AlreadyFollowException();
         }
-
         if(followerId.equals(followedId)){
             throw new InvalidFollowException();
         }
+    }
+
+    // 팔로우 되어 있는지 확인
+    private Follow check(Long followerId, Long followedId){
+        if(!followRepository.existsByFollowerIdAndFollowedId(followerId, followedId)){
+            throw new InvalidUnfollowException();
+        }
+        return find(followerId, followedId);
     }
 
 }

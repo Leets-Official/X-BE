@@ -32,4 +32,11 @@ public class FollowController {
     public ResponseDto<List<FollowResponse>> getFollowings(@PathVariable Long userId){
         return ResponseDto.response(GET_FOLLOWING_SUCCESS.getCode(), GET_FOLLOWING_SUCCESS.getMessage(), followService.getFollowings(userId));
     }
+
+    @DeleteMapping("/{userId}")
+    public ResponseDto<String> unfollow(@PathVariable Long userId, @AuthenticationPrincipal String email){
+        followService.unfollow(userId, email);
+        return ResponseDto.response(UNFOLLOW_SUCCESS.getCode(), UNFOLLOW_SUCCESS.getMessage());
+    }
+
 }
