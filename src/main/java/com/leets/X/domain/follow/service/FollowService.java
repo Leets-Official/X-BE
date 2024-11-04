@@ -13,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -36,8 +35,8 @@ public class FollowService {
     // user를 팔로우 하는 사람 리스트. user는 팔로우 당하는 사람이므로 followeId에 있어야함
     public List<FollowResponse> getFollowers(Long userId){
         User user = userService.find(userId);
+
         List<Follow> followerList = followRepository.findByFollowedId(userId);
-        List<FollowResponse> followerResponses = new ArrayList<>();
 
         return followerList.stream()
                 .map(follow -> {
@@ -48,8 +47,8 @@ public class FollowService {
 
     public List<FollowResponse> getFollowings(Long userId){
         User user = userService.find(userId);
+
         List<Follow> followerList = followRepository.findByFollowerId(userId);
-        List<FollowResponse> followerResponses = new ArrayList<>();
 
         return followerList.stream()
                 .map(follow -> {
