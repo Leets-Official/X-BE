@@ -79,13 +79,7 @@ public class PostService {
             throw new UserNotFoundException();
         }
 
-        // Post 생성 후 기본 값 설정
-        Post post = Post.builder()
-                .user(user)
-                .content(postRequestDTO.getContent())
-                .views(0)
-                .isDeleted(IsDeleted.ACTIVE) // 기본값 ACTIVE로 설정
-                .build();
+        Post post = Post.create(user, postRequestDTO.getContent()); // 글 생성 로직 캡슐화
         Post savedPost = postRepository.save(post);
 
         // 저장된 게시글을 ResponseDto에 담아 반환
