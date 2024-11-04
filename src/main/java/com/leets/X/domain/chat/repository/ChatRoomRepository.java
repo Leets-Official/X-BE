@@ -40,6 +40,6 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
             "JOIN FETCH c.user1 " +
             "JOIN FETCH c.user2 " +
             "WHERE c.user1.id = :userId OR c.user2.id = :userId")
-    Optional<ArrayList<ChatRoom>> findRoomIdByUserId(Long userId);
+    Optional<ArrayList<ChatRoom>> findRoomsByUserId(Long userId);
 
 }
