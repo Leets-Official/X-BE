@@ -5,6 +5,7 @@ import com.leets.X.domain.chat.dto.response.ChattingDto;
 import com.leets.X.domain.chat.dto.response.ChattingListResponseDto;
 import com.leets.X.domain.chat.service.ChattingService;
 import com.leets.X.global.common.response.ResponseDto;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +23,7 @@ public class ChattingController {
 
     // 채팅방 하나를 조회해준다. (대화 내역을 돌려준다는 의미)
     @GetMapping("/chatting")
-    public ResponseDto<ChattingDto> findChatting( @RequestBody GetChatRoomRequestDto getChatRoomRequestDto){
+    public ResponseDto<ChattingDto> findChatting( @RequestBody @Valid GetChatRoomRequestDto getChatRoomRequestDto){
         ChattingDto response = chattingService.getChatRoom(getChatRoomRequestDto);
         return ResponseDto.response(GET_CHATROOM.getCode(), GET_CHATROOM.getMessage(), response);
     }

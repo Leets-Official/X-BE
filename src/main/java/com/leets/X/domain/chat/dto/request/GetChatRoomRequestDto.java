@@ -1,10 +1,12 @@
 package com.leets.X.domain.chat.dto.request;
 
+import jakarta.validation.constraints.NotNull;
+
 public record GetChatRoomRequestDto(
 
-        Long roomId,
-        int size,
-        int page
+        @NotNull Long roomId,
+        @NotNull Integer size,
+        @NotNull Integer page
 
 ){
 }
