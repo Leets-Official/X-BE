@@ -2,6 +2,8 @@ package com.leets.X.domain.user.controller;
 
 import com.leets.X.domain.user.dto.request.UserInitializeRequest;
 import com.leets.X.domain.user.dto.request.UserSocialLoginRequest;
+import com.leets.X.domain.user.dto.request.UserUpdateRequest;
+import com.leets.X.domain.user.dto.response.UserProfileResponse;
 import com.leets.X.domain.user.dto.response.UserSocialLoginResponse;
 import com.leets.X.domain.user.service.LoginStatus;
 import com.leets.X.domain.user.service.UserService;
@@ -46,5 +48,20 @@ public class UserController {
         userService.initProfile(request, email);
         return ResponseDto.response(INIT_PROFILE_SUCCESS.getCode(), INIT_PROFILE_SUCCESS.getMessage());
     }
+
+    @GetMapping("/profile/{userId}")
+    @Operation(summary = "유저 기본 프로필 조회")
+    public ResponseDto<UserProfileResponse> getUserProfile(@PathVariable Long userId, @AuthenticationPrincipal @Parameter(hidden = true) String email) {
+        return ResponseDto.response(GET_PROFILE_SUCCESS.getCode(), GET_PROFILE_SUCCESS.getMessage(), userService.getProfile(userId, email));
+    }
+
+    @PatchMapping("/profile")
+    @Operation(summary = "유저 프로필 수정")
+    public ResponseDto<String> updateProfile(@RequestBody @Valid UserUpdateRequest request, @AuthenticationPrincipal @Parameter(hidden = true) String email){
+        userService.updateProfile(request, email);
+        return ResponseDto.response(PROFILE_UPDATE_SUCCESS.getCode(), PROFILE_UPDATE_SUCCESS.getMessage());
+    }
+
+
 
 }

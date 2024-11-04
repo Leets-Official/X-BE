@@ -2,6 +2,8 @@ package com.leets.X.domain.user.service;
 
 import com.leets.X.domain.user.domain.User;
 import com.leets.X.domain.user.dto.request.UserInitializeRequest;
+import com.leets.X.domain.user.dto.request.UserUpdateRequest;
+import com.leets.X.domain.user.dto.response.UserProfileResponse;
 import com.leets.X.domain.user.dto.response.UserSocialLoginResponse;
 import com.leets.X.domain.user.exception.UserNotFoundException;
 import com.leets.X.domain.user.repository.UserRepository;
@@ -53,6 +55,27 @@ public class UserService {
         User user = find(email);
 
         user.initProfile(dto);
+    }
+
+    /*
+        * 프로필 수정
+     */
+    @Transactional
+    public void updateProfile(UserUpdateRequest dto, String email){
+        User user = find(email);
+
+        user.update(dto);
+    }
+
+    public UserProfileResponse getProfile(Long userId, String email){
+        User user = userRepository.findById(userId)
+                .orElseThrow(UserNotFoundException::new);
+        // 내 프로필이라면 true
+        if(user.getEmail().equals(email)){
+            return UserProfileResponse.from(user, true);
+        }
+        // 아니라면 false
+        return UserProfileResponse.from(user, false);
     }
 
     private UserSocialLoginResponse loginUser(String email) {
