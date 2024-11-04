@@ -14,9 +14,8 @@ import org.springframework.web.bind.annotation.*;
 
 import static com.leets.X.domain.chat.controller.ResponseMessage.*;
 
-@RestController
 @Slf4j
-@Validated
+@RestController
 @RequestMapping("/api/v1/chatRoom")
 @RequiredArgsConstructor
 public class ChatRoomController {
