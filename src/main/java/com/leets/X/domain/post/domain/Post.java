@@ -29,13 +29,13 @@ public class Post extends BaseTimeEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "post")
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Like> likes = new ArrayList<>();
 
     @OneToMany(mappedBy = "post", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, fetch = FetchType.LAZY)
     private List<Image> images = new ArrayList<>();
 
-    @OneToMany(mappedBy = "post")
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Comment> commentList = new ArrayList<>();
 
 
@@ -67,5 +67,16 @@ public class Post extends BaseTimeEntity {
         if (this.isDeleted == IsDeleted.ACTIVE) { // 이미 삭제 상태가 아닐 때만 변경
             this.isDeleted = IsDeleted.DELETED;
         }
+    }
+
+    // 정적 메서드로 글 생성
+    public static Post create(User user, String content) {
+        return Post.builder()
+                    .user(user)
+                    .content(content)
+                    .views(0) // 기본 조회 수
+                    .isDeleted(IsDeleted.ACTIVE) // 기본값 ACTIVE로 설정
+                    .build();
+        }
 }
-}
+
