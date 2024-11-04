@@ -76,6 +76,8 @@ public class Post extends BaseTimeEntity {
                     .content(content)
                     .views(0) // 기본 조회 수
                     .isDeleted(IsDeleted.ACTIVE) // 기본값 ACTIVE로 설정
+                    .images(new ArrayList<>()) // 빈 리스트로 초기화
+                    .commentList(new ArrayList<>()) // 빈 리스트로 초기화
                     .build();
         }
 }
