@@ -33,12 +33,28 @@ public class PostResponseDto {
                 post.getViews(),
                 post.getIsDeleted(),
                 post.getCreatedAt(),
-                post.getUser() != null ? UserResponseDto.from(post.getUser()) : null, // null의 여부를 확인하여 null 일 떄 적절히 처리가능
-                (post.getImages() != null ? post.getImages() : List.<Image>of())
-                        .stream().map(ImageResponseDto::from).toList(), // 이미지 리스트 변환
-                (post.getCommentList() != null ? post.getCommentList() : List.<Comment>of())
-                        .stream().map(CommentResponseDto::from).toList() // 댓글 리스트 변환
+                convertUser(post),
+                convertImagesToDtoList(post),
+                convertCommentsToDtoList(post)
         );
     }
+
+
+    private static UserResponseDto convertUser(Post post) {
+        return post.getUser() != null ? UserResponseDto.from(post.getUser()) : null;
+    }
+
+    private static List<ImageResponseDto> convertImagesToDtoList(Post post) {
+        return post.getImages().stream()
+                .map(ImageResponseDto::from)
+                .toList();
+    }
+
+    private static List<CommentResponseDto> convertCommentsToDtoList(Post post) {
+        return post.getCommentList().stream()
+                .map(CommentResponseDto::from)
+                .toList();
+    }
+}
 
 }
