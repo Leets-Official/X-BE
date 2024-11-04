@@ -2,7 +2,6 @@ package com.leets.X.domain.user.domain;
 
 import com.leets.X.domain.like.domain.Like;
 import com.leets.X.domain.post.domain.Post;
-import com.leets.X.domain.user.domain.enums.Gender;
 import com.leets.X.domain.user.dto.request.UserInitializeRequest;
 import com.leets.X.global.common.domain.BaseTimeEntity;
 import jakarta.persistence.*;
@@ -26,17 +25,11 @@ public class User extends BaseTimeEntity {
     @Column(name = "user_id")
     private Long id;
 
-    //private String password; // 소셜로그인 구현에는 필요 x
-
     private String customId;
 
     private String name;
 
-   // private Gender gender;
-
     private String email;
-
-   // private String phoneNum;
 
     private LocalDate birth;
 
@@ -48,7 +41,6 @@ public class User extends BaseTimeEntity {
 
     private String introduce;
 
-   // private Image image;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Post> posts = new ArrayList<>();
