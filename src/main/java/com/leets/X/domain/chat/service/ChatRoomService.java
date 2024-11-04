@@ -4,6 +4,7 @@ import com.leets.X.domain.chat.dto.request.ChatRoomCheckRequstDto;
 import com.leets.X.domain.chat.dto.request.FindChatRoomRequestDto;
 import com.leets.X.domain.chat.dto.response.*;
 import com.leets.X.domain.chat.entity.ChatRoom;
+import com.leets.X.domain.chat.exception.NotFoundChatRoomException;
 import com.leets.X.domain.chat.redis.RedisListener;
 import com.leets.X.domain.chat.repository.ChatRoomRepository;
 import com.leets.X.domain.user.domain.User;
@@ -46,7 +47,8 @@ public class ChatRoomService {
 
 
     public ChatRoomResponseDto findUser1User2ChatRoom(ChatRoomCheckRequstDto checkDto) {
-        Long result = chatRoomRepository.findRoomIdByUserIds(checkDto.user1Id(), checkDto.user2Id()).orElse(-1L);
+        Long result = chatRoomRepository.findRoomIdByUserIds(checkDto.user1Id(), checkDto.user2Id())
+                .orElseThrow(NotFoundChatRoomException::new);
         return new ChatRoomResponseDto(result);
     }
 
