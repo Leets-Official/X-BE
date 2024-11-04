@@ -40,8 +40,7 @@ public class FollowService {
 
         return followerList.stream()
                 .map(follow -> {
-                    return FollowResponse.from(follow.getFollower());
-                })
+                    return FollowResponse.from(follow.getFollower()); })
                 .toList();
     }
 
@@ -52,8 +51,7 @@ public class FollowService {
 
         return followerList.stream()
                 .map(follow -> {
-                    return FollowResponse.from(follow.getFollowed());
-                })
+                    return FollowResponse.from(follow.getFollowed()); })
                 .toList();
     }
 
@@ -62,7 +60,7 @@ public class FollowService {
     public void unfollow(Long userId, String email){
         User follower = userService.find(email);
         User followed = userService.find(userId);
-        // 팔로우 정보가 없는지 체크
+
         Follow follow = check(follower.getId(), followed.getId());
 
         followRepository.delete(follow);
@@ -73,6 +71,7 @@ public class FollowService {
                 .orElseThrow(FollowNotFoundException::new);
     }
 
+    // 기존 팔로우 정보가 있는지, 나한테 요청을 하지 않는지 검증
     private void validate(Long followerId, Long followedId){
         if(followRepository.existsByFollowerIdAndFollowedId(followerId, followedId)){
             throw new AlreadyFollowException();
