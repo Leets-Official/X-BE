@@ -111,6 +111,11 @@ public class UserService {
                 .orElseThrow(UserNotFoundException::new);
     }
 
+    public User find(Long userId){
+        return userRepository.findById(userId)
+                .orElseThrow(UserNotFoundException::new);
+    }
+
     public boolean existUser(String email){
         return userRepository.existsByEmail(email);
     }
