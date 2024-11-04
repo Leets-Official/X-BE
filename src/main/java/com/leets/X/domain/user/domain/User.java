@@ -32,11 +32,11 @@ public class User extends BaseTimeEntity {
 
     private String name;
 
-    private Gender gender;
+   // private Gender gender;
 
     private String email;
 
-    private String phoneNum;
+   // private String phoneNum;
 
     private LocalDate birth;
 
@@ -48,12 +48,13 @@ public class User extends BaseTimeEntity {
 
     private String introduce;
 
-    @OneToMany(mappedBy = "user")
+   // private Image image;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Post> posts = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Like> likes = new ArrayList<>();
-//    private Image image;
 
     public void initProfile(UserInitializeRequest dto){
         this.birth = dto.birth();
