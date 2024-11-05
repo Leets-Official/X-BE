@@ -77,6 +77,11 @@ public class UserService {
         // 아니라면 false
         return UserProfileResponse.from(user, false);
     }
+//
+//    @Transactional
+//    public void delete(Long userId){
+//        userRepository.deleteById(userId);
+//    }
 
     private UserSocialLoginResponse loginUser(String email) {
         User user = find(email);
