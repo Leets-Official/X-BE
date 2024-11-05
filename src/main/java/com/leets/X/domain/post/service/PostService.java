@@ -7,6 +7,7 @@ import com.leets.X.domain.post.domain.Post;
 import com.leets.X.domain.post.domain.enums.IsDeleted;
 import com.leets.X.domain.post.dto.request.PostRequestDTO;
 import com.leets.X.domain.post.dto.response.PostResponseDto;
+import com.leets.X.domain.post.dto.response.PostUserResponse;
 import com.leets.X.domain.post.exception.AlreadyLikedException;
 import com.leets.X.domain.post.exception.NotLikedException;
 import com.leets.X.domain.post.exception.PostNotFoundException;
@@ -152,5 +153,14 @@ public class PostService {
     public Post findPost(Long postId) {
         return postRepository.findById(postId)
                 .orElseThrow(() -> new PostNotFoundException());
+    }
+
+    // 사용자 정보를 가져와 PostUserResponse를 반환하는 메서드
+    public PostUserResponse findUser(String email) {
+        User user = userService.find(email);
+        if (user == null) {
+            throw new UserNotFoundException();
+        }
+        return PostUserResponse.from(user); // PostUserResponse로 변환하여 반환
     }
 }
