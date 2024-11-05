@@ -25,9 +25,6 @@ public class Comment extends BaseTimeEntity {
     @JoinColumn(name = "user_id") // user_id 컬럼을 통해 join을 하겠다
     private User user;
 
-    @ManyToOne
-    @JoinColumn(name="post_id")
-    private Post post;
 
 }
 
