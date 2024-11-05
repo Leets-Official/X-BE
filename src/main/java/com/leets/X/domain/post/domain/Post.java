@@ -1,20 +1,23 @@
 package com.leets.X.domain.post.domain;
 
 import com.leets.X.domain.comment.domain.Comment;
+import com.leets.X.domain.image.domain.Image;
+import com.leets.X.domain.like.domain.Like;
+import com.leets.X.domain.post.domain.enums.IsDeleted;
+import com.leets.X.domain.user.domain.User;
 import com.leets.X.global.common.domain.BaseTimeEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
+@Getter
 public class Post extends BaseTimeEntity {
 
     @Id
@@ -22,17 +25,70 @@ public class Post extends BaseTimeEntity {
     @Column(name = "post_id")
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Like> likes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "post", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, fetch = FetchType.LAZY)
+    private List<Image> images = new ArrayList<>();
+
+
     @Column(columnDefinition = "TEXT")
     private String content;
 
     private Integer views;
 
-    private Boolean isDeleted;
+    private IsDeleted isDeleted;
 
     private LocalDateTime deletedAt;
 
-    @OneToMany(mappedBy = "post")
-    private List<Comment> commentList;
+    // 좋아요 수를 관리하기 위한 필드
 
-//    private List<Image> imageList;
+    @Column(name = "like_count")
+    private Long likeCount = 0L; // 기본값을 0L로 초기화하여 null을 방지
+
+    public void incrementLikeCount() {
+        if (this.likeCount == null) {
+            this.likeCount = 1L; // null인 경우 1로 초기화
+        } else {
+            this.likeCount++;
+        }
+    }
+
+    public void decrementLikeCount() {
+        if (this.likeCount == null || this.likeCount == 0) {
+            this.likeCount = 0L; // null이거나 0일 경우 0으로 유지
+        } else {
+            this.likeCount--;
+        }
+    }
+
+    public long getLikesCount() {
+        return likeCount != null ? likeCount : 0; // null일 경우 0 반환
+    }
+
+
+
+    // 서비스에서 글의 상태를 삭제 상태로 바꾸기 위한 메서드
+    public void delete() {
+        if (this.isDeleted == IsDeleted.ACTIVE) { // 이미 삭제 상태가 아닐 때만 변경
+            this.isDeleted = IsDeleted.DELETED;
+        }
+    }
+
+    // 정적 메서드로 글 생성
+    public static Post create(User user, String content) {
+        return Post.builder()
+                    .user(user)
+                    .content(content)
+                    .views(0) // 기본 조회 수
+                    .likeCount(0L) // 좋아요 갯수 추가
+                    .isDeleted(IsDeleted.ACTIVE) // 기본값 ACTIVE로 설정
+                    .images(new ArrayList<>()) // 빈 리스트로 초기화
+                    .build();
+        }
 }
+
