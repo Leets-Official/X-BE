@@ -155,9 +155,6 @@ public class PostService {
     // 사용자 정보를 가져와 PostUserResponse를 반환하는 메서드
     public PostUserResponse findUser(String email) {
         User user = userService.find(email);
-        if (user == null) {
-            throw new UserNotFoundException();
-        }
         return PostUserResponse.from(user); // PostUserResponse로 변환하여 반환
     }
 }
