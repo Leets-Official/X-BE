@@ -10,33 +10,35 @@ import com.leets.X.domain.follow.repository.FollowRepository;
 import com.leets.X.domain.user.domain.User;
 import com.leets.X.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class FollowService {
     private final FollowRepository followRepository;
     private final UserService userService;
 
-    // email -> userId 방향. 팔로우 하는 사람이 follower
     @Transactional
     public void follow(Long userId, String email){
         User follower = userService.find(email);
         User followed = userService.find(userId);
 
         validate(follower.getId(), followed.getId());
-        // 저장
+
         Follow follow = followRepository.save(Follow.of(follower, followed));
+
+        follower.addFollowing(follow);
+        followed.addFollower(follow);
     }
 
-    // user를 팔로우 하는 사람 리스트. user는 팔로우 당하는 사람이므로 followeId에 있어야함
     public List<FollowResponse> getFollowers(Long userId){
         User user = userService.find(userId);
 
-        List<Follow> followerList = followRepository.findByFollowedId(userId);
+        List<Follow> followerList = user.getFollowerList();
 
         return followerList.stream()
                 .map(follow -> {
@@ -47,21 +49,23 @@ public class FollowService {
     public List<FollowResponse> getFollowings(Long userId){
         User user = userService.find(userId);
 
-        List<Follow> followerList = followRepository.findByFollowerId(userId);
+        List<Follow> followingList = user.getFollowingList();
 
-        return followerList.stream()
+        return followingList.stream()
                 .map(follow -> {
                     return FollowResponse.from(follow.getFollowed()); })
                 .toList();
     }
 
-    // email -> userId 방향의 팔로우 객체 삭제
     @Transactional
     public void unfollow(Long userId, String email){
         User follower = userService.find(email);
         User followed = userService.find(userId);
 
         Follow follow = check(follower.getId(), followed.getId());
+
+        follower.removeFollowing(follow);
+        followed.removeFollower(follow);
 
         followRepository.delete(follow);
     }
