@@ -35,9 +35,6 @@ public class Post extends BaseTimeEntity {
     @OneToMany(mappedBy = "post", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, fetch = FetchType.LAZY)
     private List<Image> images = new ArrayList<>();
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<Comment> commentList = new ArrayList<>();
-
 
     @Column(columnDefinition = "TEXT")
     private String content;
@@ -49,17 +46,30 @@ public class Post extends BaseTimeEntity {
     private LocalDateTime deletedAt;
 
     // 좋아요 수를 관리하기 위한 필드
-    // 좋아요 수를 관리하기 위한 필드
-    @Column
-    private Integer likesCount = 0; // 기본값 설정
 
-    // 서비스에서 좋아요 수를 조회하기 위한 메서드
-    public int getLikesCount() {
-        if (likesCount == null) {
-            this.likesCount = 0;
+    @Column(name = "like_count")
+    private Long likeCount = 0L; // 기본값을 0L로 초기화하여 null을 방지
+
+    public void incrementLikeCount() {
+        if (this.likeCount == null) {
+            this.likeCount = 1L; // null인 경우 1로 초기화
+        } else {
+            this.likeCount++;
         }
-        return this.likesCount;
     }
+
+    public void decrementLikeCount() {
+        if (this.likeCount == null || this.likeCount == 0) {
+            this.likeCount = 0L; // null이거나 0일 경우 0으로 유지
+        } else {
+            this.likeCount--;
+        }
+    }
+
+    public long getLikesCount() {
+        return likeCount != null ? likeCount : 0; // null일 경우 0 반환
+    }
+
 
 
     // 서비스에서 글의 상태를 삭제 상태로 바꾸기 위한 메서드
@@ -75,9 +85,9 @@ public class Post extends BaseTimeEntity {
                     .user(user)
                     .content(content)
                     .views(0) // 기본 조회 수
+                    .likeCount(0L) // 좋아요 갯수 추가
                     .isDeleted(IsDeleted.ACTIVE) // 기본값 ACTIVE로 설정
                     .images(new ArrayList<>()) // 빈 리스트로 초기화
-                    .commentList(new ArrayList<>()) // 빈 리스트로 초기화
                     .build();
         }
 }
