@@ -26,7 +26,7 @@ public class PostResponseDto {
     private LocalDateTime createdAt;
     private PostUserResponse user; // 작성자 정보
     private List<ImageResponseDto> images; // 관련 이미지 리스트
-    private List<CommentResponseDto> comments; // 관련 댓글 리스트
+    private Long likeCount; // 좋아요 개수 추가
 
     public static PostResponseDto from(Post post) {
         return new PostResponseDto(
@@ -37,7 +37,7 @@ public class PostResponseDto {
                 post.getCreatedAt(),
                 convertUser(post.getUser()),
                 convertImagesToDtoList(post),
-                convertCommentsToDtoList(post)
+                post.getLikesCount() // 좋아요 개수 추가
         );
     }
 
@@ -52,11 +52,7 @@ public class PostResponseDto {
                 .toList();
     }
 
-    private static List<CommentResponseDto> convertCommentsToDtoList(Post post) {
-        return post.getCommentList().stream()
-                .map(CommentResponseDto::from)
-                .toList();
-    }
+
 }
 
 
