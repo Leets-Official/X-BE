@@ -19,11 +19,11 @@ public class Follow extends BaseTimeEntity {
 
     @ManyToOne
     @JoinColumn(name = "follower_id")
-    private User follower; // 팔로우 하는 사람
+    private User follower;
 
     @ManyToOne
     @JoinColumn(name = "followed_id")
-    private User followed; // 팔로우 당하는 사람
+    private User followed;
 
     public static Follow of(User follower, User followed) {
         return Follow.builder()
