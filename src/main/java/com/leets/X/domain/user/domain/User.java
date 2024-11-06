@@ -1,5 +1,8 @@
 package com.leets.X.domain.user.domain;
 
+import com.leets.X.domain.follow.domain.Follow;
+import com.leets.X.domain.like.domain.Like;
+import com.leets.X.domain.post.domain.Post;
 import com.leets.X.domain.user.dto.request.UserInitializeRequest;
 import com.leets.X.domain.user.dto.request.UserUpdateRequest;
 import com.leets.X.global.common.domain.BaseTimeEntity;
