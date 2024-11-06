@@ -46,8 +46,8 @@ public class ChatRoomService {
 
 
 
-    public ChatRoomResponseDto findUser1User2ChatRoom(ChatRoomCheckRequstDto checkDto) {
-        Long result = chatRoomRepository.findRoomIdByUserIds(checkDto.user1Id(), checkDto.user2Id())
+    public ChatRoomResponseDto findUser1User2ChatRoom(Long user1Id , Long user2Id) {
+        Long result = chatRoomRepository.findRoomIdByUserIds(user1Id , user2Id)
                 .orElseThrow(NotFoundChatRoomException::new);
         return new ChatRoomResponseDto(result);
     }

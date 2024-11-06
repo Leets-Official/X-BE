@@ -25,12 +25,12 @@ public class ChattingService {
     private final ChatRoomRepository chatRoomRepository;
     private final ChatMessageRepository chatMessageRepository;
 
-    public ChattingDto getChatRoom(GetChatRoomRequestDto getChatRoomRequestDto) {
-        ChatRoom findRoom = validateChatRoom(getChatRoomRequestDto);
+    public ChattingDto getChatRoom(Long roomId, Integer page, Integer size) {
+        ChatRoom findRoom = validateChatRoom(roomId);
         User user1 = findRoom.getUser1();
         User user2 = findRoom.getUser2();
 
-        List<ChatMessageResponseDto> chatMessageList = generateChatRoomMessages(getChatRoomRequestDto);
+        List<ChatMessageResponseDto> chatMessageList = generateChatRoomMessages(roomId, page, size);
         return new ChattingDto(user1.getId(), user2.getId(), user1.getCustomId(), user2.getCustomId(), chatMessageList);
     }
 
@@ -48,9 +48,9 @@ public class ChattingService {
                 .collect(Collectors.toList());
     }
 
-    private List<ChatMessageResponseDto> generateChatRoomMessages(GetChatRoomRequestDto getChatRoomRequestDto) {
+    private List<ChatMessageResponseDto> generateChatRoomMessages(Long roomId, Integer page, Integer size) {
         return chatMessageRepository.findByRoomIdOrderByCreatedAtDesc(
-                        getChatRoomRequestDto.roomId(), PageRequest.of(getChatRoomRequestDto.page()- 1, getChatRoomRequestDto.size()))
+                        roomId, PageRequest.of(page- 1, size))
                 .getContent()
                 .stream()
                 .map(ChatMessageResponseDto::fromEntity)
@@ -58,8 +58,8 @@ public class ChattingService {
     }
 
 
-    private ChatRoom validateChatRoom(GetChatRoomRequestDto getChatRoomRequestDto) {
-        return chatRoomRepository.findById(getChatRoomRequestDto.roomId())
+    private ChatRoom validateChatRoom(Long roomId) {
+        return chatRoomRepository.findById(roomId)
                 .orElseThrow(NotFoundChatRoomException::new);
     }
 

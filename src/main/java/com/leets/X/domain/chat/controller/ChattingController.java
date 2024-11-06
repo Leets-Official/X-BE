@@ -23,15 +23,15 @@ public class ChattingController {
     private final ChattingService chattingService;
 
     // 채팅방 하나를 조회해준다. (대화 내역을 돌려준다는 의미)
-    @GetMapping("/chatting")
-    public ResponseDto<ChattingDto> findChatting( @RequestBody @Valid GetChatRoomRequestDto getChatRoomRequestDto){
-        ChattingDto response = chattingService.getChatRoom(getChatRoomRequestDto);
+    @GetMapping("/chatting/{roomId}/{page}/{size}")
+    public ResponseDto<ChattingDto> findChatting(@PathVariable Long roomId, @PathVariable Integer page, @PathVariable Integer size) {
+        ChattingDto response = chattingService.getChatRoom(roomId, page, size);
         return ResponseDto.response(GET_CHATROOM.getCode(), GET_CHATROOM.getMessage(), response);
     }
 
 
-    @GetMapping("/chattingList")
-    public ResponseDto<List<ChattingListResponseDto>> findChattingList(@RequestParam @NotNull Long userId){
+    @GetMapping("/chattingList/{userId}")
+    public ResponseDto<List<ChattingListResponseDto>> findChattingList(@PathVariable Long userId){
         List<ChattingListResponseDto> response = chattingService.getChattingList(userId);
         return ResponseDto.response(GET_CHATTING_LIST.getCode(), GET_CHATTING_LIST.getMessage(), response);
     }
