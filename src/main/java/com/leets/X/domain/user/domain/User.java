@@ -1,5 +1,6 @@
 package com.leets.X.domain.user.domain;
 
+import com.leets.X.domain.follow.domain.Follow;
 import com.leets.X.domain.like.domain.Like;
 import com.leets.X.domain.post.domain.Post;
 import com.leets.X.domain.user.dto.request.UserInitializeRequest;
@@ -55,6 +56,12 @@ public class User extends BaseTimeEntity {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Like> likes = new ArrayList<>();
 
+    @OneToMany(mappedBy = "followed", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Follow> followerList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "follower", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Follow> followingList = new ArrayList<>();
+
     public void initProfile(UserInitializeRequest dto){
         this.birth = dto.birth();
         this.customId = dto.customId();
@@ -66,5 +73,23 @@ public class User extends BaseTimeEntity {
         this.location = dto.location();
         this.webSite = dto.webSite();
     }
+
+    public void addFollower(Follow follow) {
+        this.followerList.add(follow);
+    }
+
+    public void addFollowing(Follow follow) {
+        this.followingList.add(follow);
+    }
+
+    public void removeFollower(Follow follow) {
+        this.followerList.remove(follow);
+    }
+
+    public void removeFollowing(Follow follow) {
+        this.followingList.remove(follow);
+    }
+
+
 
 }

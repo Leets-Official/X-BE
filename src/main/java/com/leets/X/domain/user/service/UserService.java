@@ -77,6 +77,11 @@ public class UserService {
         // 아니라면 false
         return UserProfileResponse.from(user, false);
     }
+//
+//    @Transactional
+//    public void delete(Long userId){
+//        userRepository.deleteById(userId);
+//    }
 
     private UserSocialLoginResponse loginUser(String email) {
         User user = find(email);
@@ -108,6 +113,11 @@ public class UserService {
      */
     public User find(String email){
         return userRepository.findByEmail(email)
+                .orElseThrow(UserNotFoundException::new);
+    }
+
+    public User find(Long userId){
+        return userRepository.findById(userId)
                 .orElseThrow(UserNotFoundException::new);
     }
 
