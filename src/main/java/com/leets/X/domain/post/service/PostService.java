@@ -65,7 +65,7 @@ public class PostService {
         return posts.stream()
                 .map(PostResponseDto::from) // Post 객체를 PostResponseDto로 변환
                 .sorted(Comparator.comparingLong(postResponseDto ->
-                        Math.abs(postResponseDto.getCreatedAt().until(now, java.time.temporal.ChronoUnit.SECONDS)))) // 현재 시각과의 차이를 기준으로 정렬
+                        Math.abs(postResponseDto.createdAt().until(now, java.time.temporal.ChronoUnit.SECONDS)))) // 현재 시각과의 차이를 기준으로 정렬
                 .collect(Collectors.toList());
     }
 
