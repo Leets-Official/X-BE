@@ -29,6 +29,14 @@ public class Post extends BaseTimeEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id")
+    private Post parent;
+
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Post> replies = new ArrayList<>(); //답글 리스트
+
+
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Like> likes = new ArrayList<>();
 
@@ -90,5 +98,7 @@ public class Post extends BaseTimeEntity {
                     .images(new ArrayList<>()) // 빈 리스트로 초기화
                     .build();
         }
+
+
 }
 
