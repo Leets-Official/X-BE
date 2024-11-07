@@ -36,18 +36,4 @@ public class ChatRoomController {
 
         return ResponseDto.response(GET_ROOMID.getCode(), GET_ROOMID.getMessage(), response);
     }
-
-
-    @PostMapping("/test") // addListener 테스트 용
-    public void addListener(@RequestParam @NotNull Long roomId) {
-        chatRoomService.addListener(roomId);
-        log.info("addListener");
-    }
-
-//    @GetMapping("/test1") // addListener 테스트 용
-//    public void test1(@RequestParam Long roomId) {
-//        chatRoomService.hi(roomId);
-//        log.info("test1");
-//    }
-
 }
