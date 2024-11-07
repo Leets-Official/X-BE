@@ -45,7 +45,6 @@ public class PostService {
     }
 
     // 좋아요 수로 정렬한 게시물 조회 (직접 구현)
-
     public List<PostResponseDto> getPostsSortedByLikes() {
         List<Post> posts = postRepository.findAll(); // 모든 게시물 조회
 
@@ -108,6 +107,23 @@ public class PostService {
         return "좋아요가 추가되었습니다. 현재 좋아요 수: " + post.getLikesCount();
     }
 
+    // 답글 생성
+    @Transactional
+    public PostResponseDto createReply(Long parentId, PostRequestDTO postRequestDTO, String email) {
+        // 이메일을 통해 사용자 조회
+        User user = userService.find(email);
+
+        // 부모 글 조회
+        Post parentPost = findPost(parentId);
+
+        // 답글 생성
+        Post reply = createPost(postRequestDTO, user, parentPost); // 메서드 호출
+
+        // 답글 저장 후 DTO로 변환하여 반환
+        return PostResponseDto.from(postRepository.save(reply));
+    }
+
+
     // 게시물 삭제
     @Transactional
     public String deletePost(Long postId, String email) {
@@ -157,4 +173,16 @@ public class PostService {
         User user = userService.find(email);
         return PostUserResponse.from(user); // PostUserResponse로 변환하여 반환
     }
+
+    private Post createPost(PostRequestDTO postRequestDTO, User user, Post parentPost) {
+        return Post.builder()
+                .user(user)
+                .content(postRequestDTO.content()) // DTO에서 내용 가져오기
+                .views(0)
+                .likeCount(0L)
+                .isDeleted(IsDeleted.ACTIVE)
+                .parent(parentPost) // 부모 글 설정
+                .build();
+    }
+
 }
