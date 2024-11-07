@@ -1,5 +1,6 @@
 package com.leets.X.domain.image.domain;
 
+import com.leets.X.domain.image.dto.request.ImageSaveRequest;
 import com.leets.X.domain.post.domain.Post;
 import jakarta.persistence.*;
 import lombok.*;
@@ -23,5 +24,12 @@ public class Image {
     @ManyToOne( fetch = FetchType.LAZY)
     @JoinColumn(name = "post_Id")
     private Post post;
+
+    public static Image from(ImageSaveRequest dto) {
+        return Image.builder()
+                .name(dto.name())
+                .url(dto.url())
+                .build();
+    }
 
 }
