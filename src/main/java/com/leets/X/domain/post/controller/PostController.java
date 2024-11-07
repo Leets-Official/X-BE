@@ -63,6 +63,14 @@ public class PostController {
         return ResponseDto.response(ResponseMessage.ADD_LIKE_SUCCESS.getCode(), responseMessage);
     }
 
+    @PostMapping("/{postId}/reply")
+    @Operation(summary = "답글 생성")
+    public ResponseDto<PostResponseDto> createReply(@PathVariable Long postId, @RequestBody PostRequestDTO postRequestDTO, @AuthenticationPrincipal String email) {
+        // 답글 생성 서비스 호출 (부모 ID를 직접 전달)
+        PostResponseDto postResponseDto = postService.createReply(postId, postRequestDTO, email);
+        return ResponseDto.response(ResponseMessage.REPLY_SUCCESS.getCode(), ResponseMessage.REPLY_SUCCESS.getMessage(), postResponseDto);
+    }
+
 
     @DeleteMapping("/{postId}")
     @Operation(summary = "게시물 삭제")
