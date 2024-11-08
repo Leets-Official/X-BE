@@ -1,6 +1,5 @@
 package com.leets.X.domain.post.domain;
 
-import com.leets.X.domain.comment.domain.Comment;
 import com.leets.X.domain.image.domain.Image;
 import com.leets.X.domain.like.domain.Like;
 import com.leets.X.domain.post.domain.enums.IsDeleted;
@@ -32,7 +31,7 @@ public class Post extends BaseTimeEntity {
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Like> likes = new ArrayList<>();
 
-    @OneToMany(mappedBy = "post", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Image> images = new ArrayList<>();
 
 
@@ -89,6 +88,10 @@ public class Post extends BaseTimeEntity {
                     .isDeleted(IsDeleted.ACTIVE) // 기본값 ACTIVE로 설정
                     .images(new ArrayList<>()) // 빈 리스트로 초기화
                     .build();
-        }
+    }
+
+    public void addImage(List<Image> images) {
+        this.images.addAll(images); // 기존 리스트에 이미지 추가
+    }
 }
 
