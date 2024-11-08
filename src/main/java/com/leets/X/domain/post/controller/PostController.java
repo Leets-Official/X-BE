@@ -75,8 +75,8 @@ public class PostController {
     @DeleteMapping("/{postId}")
     @Operation(summary = "게시물 삭제")
     public ResponseDto<String> deletePost(@PathVariable Long postId, @AuthenticationPrincipal String email) {
-        String responseMessage = postService.deletePost(postId, email);
-        return ResponseDto.response(ResponseMessage.POST_DELETED_SUCCESS.getCode(), responseMessage);
+        postService.deletePost(postId, email);
+        return ResponseDto.response(ResponseMessage.POST_DELETED_SUCCESS.getCode(), ResponseMessage.POST_DELETED_SUCCESS.getMessage());
     }
 
 

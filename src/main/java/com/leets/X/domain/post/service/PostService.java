@@ -129,7 +129,7 @@ public class PostService {
 
     // 게시물 삭제
     @Transactional
-    public String deletePost(Long postId, String email) {
+    public void deletePost(Long postId, String email) {
         Post post = findPost(postId);
         User user = userService.find(email);
 
@@ -140,9 +140,6 @@ public class PostService {
 
         // 게시물 상태를 삭제 상태로 변경
         post.delete(); // delete 메서드 호출로 상태를 변경
-        postRepository.save(post); // 상태 업데이트
-
-        return "게시물이 삭제되었습니다.";
     }
 
     @Transactional
