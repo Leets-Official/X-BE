@@ -103,9 +103,9 @@ public class PostService {
         Like newLike = new Like(post, user);
         likeRepository.save(newLike);
 
-        // 좋아요 수 증가
-        post.incrementLikeCount();
-        postRepository.save(post);
+
+        // 좋아요 수 갱신
+        updateLikecount(post);
 
         return "좋아요가 추가되었습니다. 현재 좋아요 수: " + post.getLikesCount();
     }
@@ -142,6 +142,7 @@ public class PostService {
         post.delete(); // delete 메서드 호출로 상태를 변경
     }
 
+    //좋아요 취소
     @Transactional
     public String cancelLike(Long postId, String email) {
         Post post = findPost(postId);
@@ -155,11 +156,17 @@ public class PostService {
         // Like 객체 삭제
         likeRepository.deleteByPostAndUser(post, user);
 
-        // 좋아요 수 증가
-        post.decrementLikeCount();
-        postRepository.save(post); // likeCount를 데이터베이스에 업데이트
+        updateLikecount(post);
 
         return "좋아요가 삭제되었습니다. 현재 좋아요 수: " + post.getLikesCount();
+    }
+
+    //엔티티 내 메서드를 통해 좋아요 수 갱신 후 DB 반영
+    @Transactional
+    public void updateLikecount (Post post) {
+        long actualLikeCount = likeRepository.countByPost(post);
+        post.updateLikeCount(actualLikeCount);
+        postRepository.save(post);
     }
 
     // 자주 중복되는 코드 메서드로 뽑기
