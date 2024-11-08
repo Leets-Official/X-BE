@@ -1,8 +1,9 @@
 package com.leets.X.domain.post.service;
 
+import com.leets.X.domain.image.domain.Image;
+import com.leets.X.domain.image.service.ImageService;
 import com.leets.X.domain.like.domain.Like;
 import com.leets.X.domain.like.repository.LikeRepository;
-import com.leets.X.domain.post.controller.ResponseMessage;
 import com.leets.X.domain.post.domain.Post;
 import com.leets.X.domain.post.domain.enums.IsDeleted;
 import com.leets.X.domain.post.dto.request.PostRequestDTO;
@@ -16,11 +17,12 @@ import com.leets.X.domain.post.repository.PostRepository;
 import com.leets.X.domain.user.domain.User;
 import com.leets.X.domain.user.exception.UserNotFoundException;
 import com.leets.X.domain.user.service.UserService;
-import com.leets.X.global.common.response.ResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
@@ -33,6 +35,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserService userService;
     private final LikeRepository likeRepository;
+    private final ImageService imageService;
 
     // 게시물 ID로 조회
     public PostResponseDto getPostResponse(Long id) {
@@ -156,5 +159,22 @@ public class PostService {
     public PostUserResponse findUser(String email) {
         User user = userService.find(email);
         return PostUserResponse.from(user); // PostUserResponse로 변환하여 반환
+    }
+
+    @Transactional
+    public PostResponseDto createPostImage(PostRequestDTO postRequestDTO, List<MultipartFile> files) throws IOException {
+        // 이메일로 사용자 조회
+        User user = userService.find("redandkang@gmail.com"); // JWT에서 추출한 이메일 사용
+
+        Post post = Post.create(user, postRequestDTO.content()); // 글 생성 로직 캡슐화
+        Post savedPost = postRepository.save(post);
+
+        if (files != null) {
+            List<Image> images = imageService.save(files, savedPost);
+            post.addImage(images);
+        }
+
+        // 저장된 게시글을 ResponseDto에 담아 반환
+        return PostResponseDto.from(savedPost);
     }
 }
