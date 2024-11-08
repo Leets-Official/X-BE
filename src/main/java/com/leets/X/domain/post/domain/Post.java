@@ -1,6 +1,6 @@
 package com.leets.X.domain.post.domain;
 
-import com.leets.X.domain.comment.domain.Comment;
+
 import com.leets.X.domain.image.domain.Image;
 import com.leets.X.domain.like.domain.Like;
 import com.leets.X.domain.post.domain.enums.IsDeleted;
