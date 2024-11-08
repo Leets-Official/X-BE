@@ -11,6 +11,7 @@ import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
+import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
@@ -29,7 +30,7 @@ public class RedisConfig {
     public RedisConnectionFactory redisConnectionFactory(){
         // Redis 연동 설정 Host 주소와 Post를 주입해준 redisStandaloneConfiguration를
         RedisStandaloneConfiguration redisStandaloneConfiguration =
-                new RedisStandaloneConfiguration("localhost", 6379);
+                new RedisStandaloneConfiguration(redisHost, redisPort);
         // LettuceConnectionFactory의 생성자로 다시 넣어준다.
         return new LettuceConnectionFactory(redisStandaloneConfiguration);
     }
@@ -53,6 +54,21 @@ public class RedisConfig {
 
         return chatRedisTemplate;
     }
+
+    // RedisMessageListnerContainer Bean 등록
+    @Bean
+    public RedisMessageListenerContainer redisMessageListener(RedisConnectionFactory connectionFactory,
+                                                              MessageListenerAdapter listenerAdapter,
+                                                              ChannelTopic channelTopic) {
+        RedisMessageListenerContainer container = new RedisMessageListenerContainer();
+        // listenerAdapter가 특정 채널(channelTopic)에서 발행된 메시지를 수신하도록 구성합니다.
+        container.setConnectionFactory(connectionFactory);
+        // 메시지 수신 준비 + 구독할 채널 설정
+        // listenerAdapter가 특정 채널(channelTopic)에서 발행된 메시지를 수신하도록 구성합니다. 메시지 리스너 등록
+//        container.addMessageListener(listenerAdapter, channelTopic);
+        return container;
+    }
+
 
     @Bean
     public ChannelTopic topic(){

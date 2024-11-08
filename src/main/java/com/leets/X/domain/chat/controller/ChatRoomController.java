@@ -1,0 +1,39 @@
+package com.leets.X.domain.chat.controller;
+
+import com.leets.X.domain.chat.dto.request.ChatRoomCheckRequstDto;
+import com.leets.X.domain.chat.dto.request.FindChatRoomRequestDto;
+import com.leets.X.domain.chat.dto.response.ChatRoomResponseDto;
+import com.leets.X.domain.chat.service.ChatRoomService;
+import com.leets.X.global.common.response.ResponseDto;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.*;
+
+import static com.leets.X.domain.chat.controller.ResponseMessage.*;
+
+@Slf4j
+@RestController
+@RequestMapping("/api/v1/chatRoom")
+@RequiredArgsConstructor
+public class ChatRoomController {
+
+    private final ChatRoomService chatRoomService;
+
+    @PostMapping
+    public ResponseDto<ChatRoomResponseDto> createChatRoom(@RequestBody @Valid FindChatRoomRequestDto findChatRoomRequestDto){
+        ChatRoomResponseDto response = chatRoomService.saveChatRoom(findChatRoomRequestDto);
+        return ResponseDto.response(CHATROOM_CREATE_SUCCESS.getCode(), CHATROOM_CREATE_SUCCESS.getMessage(), response);
+    }
+
+
+
+    // user1Id와 user2Id의 채팅방이 있는 지 조회
+    @GetMapping("/{user1Id}/{user2Id}")
+    public ResponseDto<ChatRoomResponseDto> existChatRoom(@PathVariable Long user1Id, @PathVariable Long user2Id){
+        ChatRoomResponseDto response = chatRoomService.findUser1User2ChatRoom(user1Id , user2Id);
+
+        return ResponseDto.response(GET_ROOMID.getCode(), GET_ROOMID.getMessage(), response);
+    }
+}
