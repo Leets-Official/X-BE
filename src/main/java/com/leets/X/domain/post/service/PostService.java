@@ -56,18 +56,17 @@ public class PostService {
     }
 
     // 최신 게시물 조회
-    public List<PostResponseDto> getLatestPosts() {
-        List<Post> posts = postRepository.findTop10ByOrderByCreatedAtDesc(); // 최신 10개 게시물 조회
-        // 현재 시각 가져오기
-        LocalDateTime now = LocalDateTime.now();
 
-        // 게시물을 PostResponseDto로 변환하고 정렬
+    public List<PostResponseDto> getLatestPosts() {
+        // 최신 10개 게시물 조회
+        List<Post> posts = postRepository.findTop10ByOrderByCreatedAtDesc();
+
+        // Post 객체를 PostResponseDto로 변환하여 반환
         return posts.stream()
                 .map(PostResponseDto::from) // Post 객체를 PostResponseDto로 변환
-                .sorted(Comparator.comparingLong(postResponseDto ->
-                        Math.abs(postResponseDto.createdAt().until(now, java.time.temporal.ChronoUnit.SECONDS)))) // 현재 시각과의 차이를 기준으로 정렬
                 .collect(Collectors.toList());
     }
+
 
     // 글 생성 (Refactoring)
     @Transactional
