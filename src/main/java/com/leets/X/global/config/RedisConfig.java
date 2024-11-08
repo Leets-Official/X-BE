@@ -30,7 +30,7 @@ public class RedisConfig {
     public RedisConnectionFactory redisConnectionFactory(){
         // Redis 연동 설정 Host 주소와 Post를 주입해준 redisStandaloneConfiguration를
         RedisStandaloneConfiguration redisStandaloneConfiguration =
-                new RedisStandaloneConfiguration("localhost", 6379);
+                new RedisStandaloneConfiguration(redisHost, redisPort);
         // LettuceConnectionFactory의 생성자로 다시 넣어준다.
         return new LettuceConnectionFactory(redisStandaloneConfiguration);
     }
