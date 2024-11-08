@@ -1,8 +1,7 @@
 package com.leets.X.domain.post.dto.response;
 
 
-import com.leets.X.domain.comment.domain.Comment;
-import com.leets.X.domain.image.domain.Image;
+import com.leets.X.domain.image.dto.response.ImageResponse;
 import com.leets.X.domain.post.domain.Post;
 import com.leets.X.domain.post.domain.enums.IsDeleted;
 import com.leets.X.domain.user.domain.User;
@@ -11,7 +10,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 
 
@@ -25,7 +23,7 @@ public class PostResponseDto {
     private IsDeleted isDeleted;
     private LocalDateTime createdAt;
     private PostUserResponse user; // 작성자 정보
-    private List<ImageResponseDto> images; // 관련 이미지 리스트
+    private List<ImageResponse> images; // 관련 이미지 리스트
     private Long likeCount; // 좋아요 개수 추가
 
     public static PostResponseDto from(Post post) {
@@ -46,9 +44,9 @@ public class PostResponseDto {
         return user != null ? PostUserResponse.from(user) : null;
     }
 
-    private static List<ImageResponseDto> convertImagesToDtoList(Post post) {
+    private static List<ImageResponse> convertImagesToDtoList(Post post) {
         return post.getImages().stream()
-                .map(ImageResponseDto::from)
+                .map(ImageResponse::from)
                 .toList();
     }
 
