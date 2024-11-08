@@ -54,25 +54,13 @@ public class Post extends BaseTimeEntity {
     private LocalDateTime deletedAt;
 
     // 좋아요 수를 관리하기 위한 필드
-
     @Column(name = "like_count")
     private Long likeCount = 0L; // 기본값을 0L로 초기화하여 null을 방지
 
-    public void incrementLikeCount() {
-        if (this.likeCount == null) {
-            this.likeCount = 1L; // null인 경우 1로 초기화
-        } else {
-            this.likeCount++;
-        }
+    public void updateLikeCount(long newLikeCount) {
+        this.likeCount =  newLikeCount;
     }
 
-    public void decrementLikeCount() {
-        if (this.likeCount == null || this.likeCount == 0) {
-            this.likeCount = 0L; // null이거나 0일 경우 0으로 유지
-        } else {
-            this.likeCount--;
-        }
-    }
 
     public long getLikesCount() {
         return likeCount != null ? likeCount : 0; // null일 경우 0 반환
