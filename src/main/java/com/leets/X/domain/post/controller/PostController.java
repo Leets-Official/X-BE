@@ -23,11 +23,11 @@ public class PostController {
 
     private final PostService postService;
 
-
+    // 게시물 Id조회
     @GetMapping("/{id}")
     @Operation(summary = "게시물 ID로 조회")
-    public ResponseDto<PostResponseDto> getPost(@PathVariable Long id) {
-        PostResponseDto postResponseDto = postService.getPostResponse(id);
+    public ResponseDto<PostResponseDto> getPost(@PathVariable Long id, @AuthenticationPrincipal String email) {
+        PostResponseDto postResponseDto = postService.getPostResponse(id, email);
         return ResponseDto.response(ResponseMessage.GET_POST_SUCCESS.getCode(), ResponseMessage.GET_POST_SUCCESS.getMessage(), postResponseDto);
     }
 
