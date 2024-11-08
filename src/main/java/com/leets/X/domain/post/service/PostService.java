@@ -47,25 +47,27 @@ public class PostService {
     }
 
     // 좋아요 수로 정렬한 게시물 조회 (직접 구현)
-    public List<PostResponseDto> getPostsSortedByLikes() {
-        List<Post> posts = postRepository.findAll(); // 모든 게시물 조회
+    public List<PostResponseDto> getPostsSortedByLikes(String email) {
+        User user = userService.find(email); // 현재 사용자 정보 조회
 
+        List<Post> posts = postRepository.findAll();
         return posts.stream()
-                .filter(post -> post.getIsDeleted() == IsDeleted.ACTIVE) // ACTIVE 상태만 필터링
-                .sorted(Comparator.comparing(Post::getLikesCount).reversed()) // 좋아요 수 기준으로 내림차순 정렬
-                .map(PostResponseDto::from) // DTO로 변환
+                .filter(post -> post.getIsDeleted() == IsDeleted.ACTIVE)
+                .sorted(Comparator.comparing(Post::getLikesCount).reversed())
+                .map(post -> PostResponseDto.from(post, user, likeRepository)) // 좋아요 여부 반영
                 .collect(Collectors.toList());
     }
 
     // 최신 게시물 조회
 
-    public List<PostResponseDto> getLatestPosts() {
+    public List<PostResponseDto> getLatestPosts(String email) {
+        User user = userService.find(email);
         // 최신 10개 게시물 조회
         List<Post> posts = postRepository.findTop10ByOrderByCreatedAtDesc();
 
         // Post 객체를 PostResponseDto로 변환하여 반환
         return posts.stream()
-                .map(PostResponseDto::from) // Post 객체를 PostResponseDto로 변환
+                .map(post -> PostResponseDto.from(post, user, likeRepository)) // Post 객체를 PostResponseDto로 변환
                 .collect(Collectors.toList());
     }
 

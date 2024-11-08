@@ -34,16 +34,16 @@ public class PostController {
 
     @GetMapping("/likes")
     @Operation(summary = "좋아요 수로 정렬한 게시물 조회")
-    public ResponseDto<List<PostResponseDto>> getPostsSortedByLikes() {
-        List<PostResponseDto> posts = postService.getPostsSortedByLikes();
+    public ResponseDto<List<PostResponseDto>> getPostsSortedByLikes(@AuthenticationPrincipal String email) {
+        List<PostResponseDto> posts = postService.getPostsSortedByLikes(email);
         return ResponseDto.response(ResponseMessage.GET_SORTED_BY_LIKES_SUCCESS.getCode(), ResponseMessage.GET_SORTED_BY_LIKES_SUCCESS.getMessage(), posts);
     }
 
 
     @GetMapping("/latest")
     @Operation(summary = "최신 게시물 조회")
-    public ResponseDto<List<PostResponseDto>> getLatestPosts() {
-        List<PostResponseDto> posts = postService.getLatestPosts();
+    public ResponseDto<List<PostResponseDto>> getLatestPosts(@AuthenticationPrincipal String email) {
+        List<PostResponseDto> posts = postService.getLatestPosts(email);
         return ResponseDto.response(ResponseMessage.GET_LATEST_POST_SUCCESS.getCode(), ResponseMessage.GET_LATEST_POST_SUCCESS.getMessage(), posts);
     }
 
