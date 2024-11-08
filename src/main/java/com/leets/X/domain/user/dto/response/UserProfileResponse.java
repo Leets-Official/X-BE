@@ -11,10 +11,10 @@ public record UserProfileResponse(
         Boolean isMyProfile,
         String name,
         String customId,
-        LocalDateTime createAt,
-        Long followCount,
-        Long followerCount
-) {
+        Long followerCount,
+        Long followingCount,
+        LocalDateTime createAt
+        ) {
     // 정적 팩토리 메서드
     public static UserProfileResponse from(User user, Boolean isMyProfile) {
         return UserProfileResponse.builder()
@@ -22,6 +22,8 @@ public record UserProfileResponse(
                 .isMyProfile(isMyProfile)
                 .name(user.getName())
                 .customId(user.getCustomId())
+                .followerCount(user.getFollowerCount())
+                .followingCount(user.getFollowingCount())
                 .createAt(user.getCreatedAt())
                 .build();
     }
