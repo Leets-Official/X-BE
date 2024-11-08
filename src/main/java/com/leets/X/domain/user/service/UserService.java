@@ -1,5 +1,6 @@
 package com.leets.X.domain.user.service;
 
+import com.leets.X.domain.follow.domain.Follow;
 import com.leets.X.domain.user.domain.User;
 import com.leets.X.domain.user.dto.request.UserInitializeRequest;
 import com.leets.X.domain.user.dto.request.UserUpdateRequest;
@@ -17,8 +18,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.leets.X.domain.user.service.LoginStatus.LOGIN;
-import static com.leets.X.domain.user.service.LoginStatus.REGISTER;
+import java.util.List;
+
+import static com.leets.X.domain.user.domain.enums.LoginStatus.LOGIN;
+import static com.leets.X.domain.user.domain.enums.LoginStatus.REGISTER;
 
 @Slf4j
 @Service
@@ -70,12 +73,9 @@ public class UserService {
     public UserProfileResponse getProfile(Long userId, String email){
         User user = userRepository.findById(userId)
                 .orElseThrow(UserNotFoundException::new);
-        // 내 프로필이라면 true
-        if(user.getEmail().equals(email)){
-            return UserProfileResponse.from(user, true);
-        }
-        // 아니라면 false
-        return UserProfileResponse.from(user, false);
+        boolean isMyProfile = user.getEmail().equals(email);
+        boolean isFollowing = checkFollowing(user, email);
+        return UserProfileResponse.from(user, isMyProfile, isFollowing);
     }
 //
 //    @Transactional
@@ -105,6 +105,15 @@ public class UserService {
                 .accessToken(jwtProvider.generateAccessToken(email))
                 .refreshToken(jwtProvider.generateRefreshToken())
                 .build();
+    }
+
+    // 팔로우 되어있는 유저라면 true
+    private boolean checkFollowing(User target, String email){
+        User source = find(email);
+        List<Follow> followerList = target.getFollowerList();
+
+        return followerList.stream()
+                .anyMatch(follow -> follow.getFollower().getId().equals(source.getId()));
     }
 
     /*
