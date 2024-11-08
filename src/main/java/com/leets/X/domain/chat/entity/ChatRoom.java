@@ -6,9 +6,9 @@ import com.leets.X.global.common.domain.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 
 @Builder
-@Getter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED) // 기본 생성자 접근 레벨 PROTECTED
 @Entity
@@ -28,13 +28,4 @@ public class ChatRoom extends BaseTimeEntity {
     private User user2;
 
     private String lastMessage;
-
-    public static ChatRoom of(User user1, User user2) {
-
-        return ChatRoom.builder()
-                .user1(user1)
-                .user2(user2)
-                .lastMessage("")
-                .build();
-    }
 }
