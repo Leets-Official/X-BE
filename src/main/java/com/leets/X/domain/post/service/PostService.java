@@ -35,13 +35,15 @@ public class PostService {
     private final LikeRepository likeRepository;
 
     // 게시물 ID로 조회
-    public PostResponseDto getPostResponse(Long id) {
+    public PostResponseDto getPostResponse(Long id, String email) {
         Post post = findPost(id);
         // 삭제되지 않은 게시물만 조회 가능하게끔 수정
         if (post.getIsDeleted() != IsDeleted.ACTIVE) {
             throw new PostNotFoundException();
         }
-        return PostResponseDto.from(post);
+        User user = userService.find(email);
+
+        return PostResponseDto.from(post,user,likeRepository);
     }
 
     // 좋아요 수로 정렬한 게시물 조회 (직접 구현)
