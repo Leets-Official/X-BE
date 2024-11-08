@@ -20,6 +20,8 @@ spring:
       port: ${MONGO_PORT}
       host: ${MONGO_HOST}
       database: ${MONGO_DATABASE}
+      username: ${MONGO_USER}
+      password: ${MONGO_PASSWORD}
 
 x:
   jwt:
