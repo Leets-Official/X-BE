@@ -1,6 +1,5 @@
 package com.leets.X.domain.post.controller;
 
-import com.leets.X.domain.post.domain.Post;
 import com.leets.X.domain.post.dto.request.PostRequestDTO;
 import com.leets.X.domain.post.dto.response.PostResponseDto;
 import com.leets.X.domain.post.service.PostService;
@@ -8,12 +7,14 @@ import com.leets.X.global.common.response.ResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
-import java.util.Map;
+
 //컨트롤러에서 ResponseDto만들게끔
 @Tag(name = "POST")
 @RestController
@@ -79,6 +80,14 @@ public class PostController {
         return ResponseDto.response(ResponseMessage.LIKE_CANCEL_SUCCESS.getCode(), responseMessage);
     }
 
+    @PostMapping(value = "/post-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "글 생성")
+    public ResponseDto<PostResponseDto> createPost(@RequestPart PostRequestDTO postRequestDTO,
+                                                   @RequestParam(value = "files", required = false) List<MultipartFile> files,
+                                                   @AuthenticationPrincipal String email) throws IOException {
 
+        PostResponseDto postResponseDto = postService.createPostImage(postRequestDTO, files, email);
+        return ResponseDto.response(ResponseMessage.POST_SUCCESS.getCode(), ResponseMessage.POST_SUCCESS.getMessage(), postResponseDto);
+    }
 
 }

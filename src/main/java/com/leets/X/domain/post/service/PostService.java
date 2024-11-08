@@ -162,9 +162,9 @@ public class PostService {
     }
 
     @Transactional
-    public PostResponseDto createPostImage(PostRequestDTO postRequestDTO, List<MultipartFile> files) throws IOException {
+    public PostResponseDto createPostImage(PostRequestDTO postRequestDTO, List<MultipartFile> files, String email) throws IOException {
         // 이메일로 사용자 조회
-        User user = userService.find("redandkang@gmail.com"); // JWT에서 추출한 이메일 사용
+        User user = userService.find(email); // JWT에서 추출한 이메일 사용
 
         Post post = Post.create(user, postRequestDTO.content()); // 글 생성 로직 캡슐화
         Post savedPost = postRepository.save(post);
