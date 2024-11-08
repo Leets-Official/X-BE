@@ -34,17 +34,35 @@ public class PostService {
     private final UserService userService;
     private final LikeRepository likeRepository;
 
-    // 게시물 ID로 조회
-    public PostResponseDto getPostResponse(Long id, String email) {
-        Post post = findPost(id);
-        // 삭제되지 않은 게시물만 조회 가능하게끔 수정
-        if (post.getIsDeleted() != IsDeleted.ACTIVE) {
-            throw new PostNotFoundException();
-        }
+    //모든글 조회(자식 글은 조회 안되게)
+    public List<PostResponseDto> getAllParentPosts(String email) {
         User user = userService.find(email);
 
-        return PostResponseDto.from(post,user,likeRepository);
+        // 모든 부모글들을 조회
+        List<Post> posts = postRepository.findByParentIsNullAndIsDeletedOrderByCreatedAtDesc(IsDeleted.ACTIVE);
+
+
+
+        // Post 객체를 PostResponseDto로 변환하여 반환
+        return posts.stream()
+                .map(post -> PostResponseDto.withoutReplies(post, user, likeRepository))
+                .collect(Collectors.toList());
     }
+
+
+    // 게시물 ID로 조회
+    public PostResponseDto getPostResponse(Long id, String email) {
+        // 특정 부모 글과 자식 글을 함께 조회하는 메서드를 사용하여 단일 게시물 조회
+        Post post = postRepository.findWithRepliesByIdAndIsDeleted(id,IsDeleted.ACTIVE)
+                .orElseThrow(PostNotFoundException::new); // 게시물이 없을 때 예외 발생
+
+        // 사용자 정보 조회
+        User user = userService.find(email);
+
+        // PostResponseDto 생성 및 반환
+        return PostResponseDto.from(post, user, likeRepository);
+    }
+
 
     // 좋아요 수로 정렬한 게시물 조회 (직접 구현)
     public List<PostResponseDto> getPostsSortedByLikes(String email) {
@@ -58,16 +76,18 @@ public class PostService {
                 .collect(Collectors.toList());
     }
 
-    // 최신 게시물 조회
-
     public List<PostResponseDto> getLatestPosts(String email) {
         User user = userService.find(email);
-        // 최신 10개 게시물 조회
-        List<Post> posts = postRepository.findTop10ByOrderByCreatedAtDesc();
+
+        // 최신 부모 글 10개 조회 (답글 제외)
+        List<Post> posts = postRepository.findByParentIsNullAndIsDeletedOrderByCreatedAtDesc(IsDeleted.ACTIVE)
+                .stream()
+                .limit(10) // 10개로 제한
+                .collect(Collectors.toList());
 
         // Post 객체를 PostResponseDto로 변환하여 반환
         return posts.stream()
-                .map(post -> PostResponseDto.from(post, user, likeRepository)) // Post 객체를 PostResponseDto로 변환
+                .map(post -> PostResponseDto.withoutReplies(post, user, likeRepository)) // Post 객체를 PostResponseDto로 변환
                 .collect(Collectors.toList());
     }
 

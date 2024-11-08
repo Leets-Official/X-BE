@@ -1,6 +1,6 @@
 package com.leets.X.domain.post.controller;
 
-import com.leets.X.domain.post.domain.Post;
+
 import com.leets.X.domain.post.dto.request.PostRequestDTO;
 import com.leets.X.domain.post.dto.response.PostResponseDto;
 import com.leets.X.domain.post.service.PostService;
@@ -8,13 +8,11 @@ import com.leets.X.global.common.response.ResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
-//컨트롤러에서 ResponseDto만들게끔
+
 @Tag(name = "POST")
 @RestController
 @RequestMapping("/api/v1/posts")
@@ -23,12 +21,20 @@ public class PostController {
 
     private final PostService postService;
 
-    // 게시물 Id조회
+    // 게시물 상세 조회(자식 게시물 까지 함께 조회됨)
     @GetMapping("/{id}")
-    @Operation(summary = "게시물 ID로 조회")
+    @Operation(summary = "게시물 ID로 상세 조회")
     public ResponseDto<PostResponseDto> getPost(@PathVariable Long id, @AuthenticationPrincipal String email) {
         PostResponseDto postResponseDto = postService.getPostResponse(id, email);
         return ResponseDto.response(ResponseMessage.GET_POST_SUCCESS.getCode(), ResponseMessage.GET_POST_SUCCESS.getMessage(), postResponseDto);
+    }
+
+    // 모든 부모게시물 조회
+    @GetMapping("/all")
+    @Operation(summary = "전체 부모 글 조회")
+    public ResponseDto<List<PostResponseDto>> getAllParentPosts(@AuthenticationPrincipal String email) {
+        List<PostResponseDto> posts = postService.getAllParentPosts(email);
+        return ResponseDto.response(ResponseMessage.GET_ALL_PARENT_POSTS_SUCCESS.getCode(), ResponseMessage.GET_ALL_PARENT_POSTS_SUCCESS.getMessage(), posts);
     }
 
 
