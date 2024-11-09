@@ -27,8 +27,7 @@ public record PostResponseDto(
 ) {
 
 
-    public static PostResponseDto from(Post post) {
-
+    public static PostResponseDto from(Post post, boolean isLikedByUser) {
         return new PostResponseDto(
                 post.getId(),
                 post.getContent(),
@@ -39,25 +38,7 @@ public record PostResponseDto(
                 convertImagesToDtoList(post),
                 post.getLikesCount(),
                 convertRepliesToDtoList(post.getReplies()),
-                false
-
-        );
-    }
-    // 전체 조회 시 자식 글을 제외하고 부모 글만 가져오기 위한 메서드
-    public static PostResponseDto withoutReplies(Post post, User user, LikeRepository likeRepository) {
-        boolean isLikedByUser = user != null && likeRepository.existsByPostAndUser(post, user);
-
-        return new PostResponseDto(
-                post.getId(),
-                post.getContent(),
-                post.getViews(),
-                post.getIsDeleted(),
-                post.getCreatedAt(),
-                convertUser(post.getUser()),
-                convertImagesToDtoList(post),
-                post.getLikesCount(),
-                Collections.emptyList(),  // replies는 빈 리스트로 설정하여 자식 글을 제외
-                isLikedByUser
+                isLikedByUser // 서비스에서 전달된 boolean 값 사용
         );
     }
 
@@ -83,10 +64,9 @@ public record PostResponseDto(
 
     private static List<PostResponseDto> convertRepliesToDtoList(List<Post> replies) {
         return replies != null ? replies.stream()
-                .map(PostResponseDto::from)
+                .map(reply -> PostResponseDto.from(reply, false)) // 기본적으로 isLikedByUser를 false로 설정
                 .collect(Collectors.toList()) : Collections.emptyList();
     }
-
     private static PostUserResponse convertUser(User user) {
         return user != null ? PostUserResponse.from(user) : null;
     }
