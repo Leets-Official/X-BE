@@ -20,10 +20,10 @@ spring:
 
 x:
   jwt:
-    key: a2f5ace34a791d5ad31e820291bc1aa90be266da58d090e58871e324f11d96b9
+    key: ${JWT_KEY}
     access:
-      expiration: 3600000
-      header: Authorization
+      expiration: ${ACCESS_EXP}
+      header: ${ACCESS_HEAD}
     refresh:
-      expiration: 1209600000
-      header: Authorization_refresh
+      expiration: ${REFRESH_EXP}
+      header: ${REFRESH_HEAD}
