@@ -41,4 +41,10 @@ public class ChatRoomService {
                 .orElseThrow(NotFoundChatRoomException::new);
         return new ChatRoomResponseDto(result);
     }
+
+    // 테스트를 위해서 만들어둠. 추후 삭제
+    public void addListener(Long roomId) {
+        redisMessageListener.adaptMessageListener(roomId); // 리스너 등록
+    }
+
 }

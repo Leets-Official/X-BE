@@ -8,6 +8,7 @@ import com.leets.X.domain.chat.dto.response.LatestMessageDto;
 import com.leets.X.domain.chat.entity.ChatMessage;
 import com.leets.X.domain.chat.entity.ChatRoom;
 import com.leets.X.domain.chat.exception.NotFoundChatRoomException;
+import com.leets.X.domain.chat.redis.RedisListener;
 import com.leets.X.domain.chat.repository.ChatMessageRepository;
 import com.leets.X.domain.chat.repository.ChatRoomRepository;
 import com.leets.X.domain.user.domain.User;
@@ -24,11 +25,13 @@ public class ChattingService {
 
     private final ChatRoomRepository chatRoomRepository;
     private final ChatMessageRepository chatMessageRepository;
+    private final RedisListener redisMessageListener;
 
     public ChattingDto getChatRoom(Long roomId, Integer page, Integer size) {
         ChatRoom findRoom = validateChatRoom(roomId);
         User user1 = findRoom.getUser1();
         User user2 = findRoom.getUser2();
+        redisMessageListener.adaptMessageListener(findRoom.getId()); // 채팅방 내역 조회시 리스너 등록 추가 (운영 시 삭제)
 
         List<ChatMessageResponseDto> chatMessageList = generateChatRoomMessages(roomId, page, size);
         return new ChattingDto(user1.getId(), user2.getId(), user1.getCustomId(), user2.getCustomId(), chatMessageList);
