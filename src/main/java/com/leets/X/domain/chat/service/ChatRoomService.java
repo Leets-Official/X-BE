@@ -4,6 +4,7 @@ import com.leets.X.domain.chat.dto.request.ChatRoomCheckRequstDto;
 import com.leets.X.domain.chat.dto.request.FindChatRoomRequestDto;
 import com.leets.X.domain.chat.dto.response.*;
 import com.leets.X.domain.chat.entity.ChatRoom;
+import com.leets.X.domain.chat.exception.ChatRoomExistException;
 import com.leets.X.domain.chat.exception.NotFoundChatRoomException;
 import com.leets.X.domain.chat.redis.RedisListener;
 import com.leets.X.domain.chat.repository.ChatRoomRepository;
@@ -29,12 +30,14 @@ public class ChatRoomService {
         User user1 = userService.find(findChatRoomRequestDto.user1Id());
         User user2 = userService.find(findChatRoomRequestDto.user2Id());
 
+        chatRoomRepository.findRoomIdByUserIds(user1.getId(), user2.getId()).ifPresent(c->{
+            throw new ChatRoomExistException();
+        });
+
         ChatRoom savedRoom = chatRoomRepository.save(ChatRoom.of(user1, user2)); // 채팅방 RDB에 저장
         redisMessageListener.adaptMessageListener(savedRoom.getId()); // 리스너 등록
         return new ChatRoomResponseDto(savedRoom.getId());
     }
-
-
 
     public ChatRoomResponseDto findUser1User2ChatRoom(Long user1Id , Long user2Id) {
         Long result = chatRoomRepository.findRoomIdByUserIds(user1Id , user2Id)
