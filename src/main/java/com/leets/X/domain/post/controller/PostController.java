@@ -2,6 +2,7 @@ package com.leets.X.domain.post.controller;
 
 
 import com.leets.X.domain.post.dto.request.PostRequestDTO;
+import com.leets.X.domain.post.dto.response.ParentPostResponseDto;
 import com.leets.X.domain.post.dto.response.PostResponseDto;
 import com.leets.X.domain.post.service.PostService;
 import com.leets.X.global.common.response.ResponseDto;
@@ -32,8 +33,8 @@ public class PostController {
     // 모든 부모게시물 조회
     @GetMapping("/all")
     @Operation(summary = "전체 부모 글 조회")
-    public ResponseDto<List<PostResponseDto>> getAllParentPosts(@AuthenticationPrincipal String email) {
-        List<PostResponseDto> posts = postService.getAllParentPosts(email);
+    public ResponseDto<List<ParentPostResponseDto>> getAllParentPosts(@AuthenticationPrincipal String email) {
+        List<ParentPostResponseDto> posts = postService.getAllParentPosts(email);
         return ResponseDto.response(ResponseMessage.GET_ALL_PARENT_POSTS_SUCCESS.getCode(), ResponseMessage.GET_ALL_PARENT_POSTS_SUCCESS.getMessage(), posts);
     }
 
@@ -48,8 +49,8 @@ public class PostController {
 
     @GetMapping("/latest")
     @Operation(summary = "최신 게시물 조회")
-    public ResponseDto<List<PostResponseDto>> getLatestPosts(@AuthenticationPrincipal String email) {
-        List<PostResponseDto> posts = postService.getLatestPosts(email);
+    public ResponseDto<List<ParentPostResponseDto>> getLatestPosts(@AuthenticationPrincipal String email) {
+        List<ParentPostResponseDto> posts = postService.getLatestParentPosts(email);
         return ResponseDto.response(ResponseMessage.GET_LATEST_POST_SUCCESS.getCode(), ResponseMessage.GET_LATEST_POST_SUCCESS.getMessage(), posts);
     }
 
