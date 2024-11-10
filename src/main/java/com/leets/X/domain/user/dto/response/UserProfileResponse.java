@@ -11,18 +11,24 @@ public record UserProfileResponse(
         Boolean isMyProfile,
         String name,
         String customId,
-        LocalDateTime createAt,
-        Long followCount,
-        Long followerCount
-) {
+        Long followerCount,
+        Long followingCount,
+        Boolean isFollowing,
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt
+        ) {
     // 정적 팩토리 메서드
-    public static UserProfileResponse from(User user, Boolean isMyProfile) {
+    public static UserProfileResponse from(User user, Boolean isMyProfile, Boolean isFollowing) {
         return UserProfileResponse.builder()
                 .userId(user.getId())
                 .isMyProfile(isMyProfile)
                 .name(user.getName())
                 .customId(user.getCustomId())
-                .createAt(user.getCreatedAt())
+                .followerCount(user.getFollowerCount())
+                .followingCount(user.getFollowingCount())
+                .isFollowing(isFollowing)
+                .createdAt(user.getCreatedAt())
+                .updatedAt(user.getUpdatedAt())
                 .build();
     }
 }

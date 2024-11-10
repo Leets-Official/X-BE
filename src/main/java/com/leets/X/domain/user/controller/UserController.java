@@ -5,7 +5,7 @@ import com.leets.X.domain.user.dto.request.UserSocialLoginRequest;
 import com.leets.X.domain.user.dto.request.UserUpdateRequest;
 import com.leets.X.domain.user.dto.response.UserProfileResponse;
 import com.leets.X.domain.user.dto.response.UserSocialLoginResponse;
-import com.leets.X.domain.user.service.LoginStatus;
+import com.leets.X.domain.user.domain.enums.LoginStatus;
 import com.leets.X.domain.user.service.UserService;
 import com.leets.X.global.common.response.ResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
