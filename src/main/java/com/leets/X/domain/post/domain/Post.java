@@ -1,6 +1,5 @@
 package com.leets.X.domain.post.domain;
 
-import com.leets.X.domain.comment.domain.Comment;
 import com.leets.X.domain.image.domain.Image;
 import com.leets.X.domain.like.domain.Like;
 import com.leets.X.domain.post.domain.enums.IsDeleted;
@@ -29,10 +28,18 @@ public class Post extends BaseTimeEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id")
+    private Post parent;
+
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Post> replies = new ArrayList<>(); //답글 리스트
+
+
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Like> likes = new ArrayList<>();
 
-    @OneToMany(mappedBy = "post", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Image> images = new ArrayList<>();
 
 
@@ -50,12 +57,8 @@ public class Post extends BaseTimeEntity {
     @Column(name = "like_count")
     private Long likeCount = 0L; // 기본값을 0L로 초기화하여 null을 방지
 
-    public void incrementLikeCount() {
-        if (this.likeCount == null) {
-            this.likeCount = 1L; // null인 경우 1로 초기화
-        } else {
-            this.likeCount++;
-        }
+    public void updateLikeCount(long newLikeCount) {
+        this.likeCount = newLikeCount;
     }
 
     public void decrementLikeCount() {
@@ -82,13 +85,31 @@ public class Post extends BaseTimeEntity {
     // 정적 메서드로 글 생성
     public static Post create(User user, String content) {
         return Post.builder()
-                    .user(user)
-                    .content(content)
-                    .views(0) // 기본 조회 수
-                    .likeCount(0L) // 좋아요 갯수 추가
-                    .isDeleted(IsDeleted.ACTIVE) // 기본값 ACTIVE로 설정
-                    .images(new ArrayList<>()) // 빈 리스트로 초기화
-                    .build();
-        }
+                .user(user)
+                .content(content)
+                .views(0) // 기본 조회 수
+                .likeCount(0L) // 좋아요 갯수 추가
+                .isDeleted(IsDeleted.ACTIVE) // 기본값 ACTIVE로 설정
+                .images(new ArrayList<>()) // 빈 리스트로 초기화
+                .build();
+    }
+
+    // 정적 팩토리 메서드
+    public static Post create(User user, String content, Post parent) {
+        return Post.builder()
+                .user(user)
+                .content(content)
+                .views(0)                 // 기본값 설정
+                .likeCount(0L)            // 기본값 설정
+                .isDeleted(IsDeleted.ACTIVE) // 기본값 설정
+                .parent(parent)           // 부모 글 설정
+                .images(new ArrayList<>()) // 빈 리스트로 초기화
+                .build();
+
+    }
+
+    public void addImage(List<Image> images) {
+        this.images.addAll(images); // 기존 리스트에 이미지 추가
+    }
 }
 
