@@ -1,6 +1,7 @@
 package com.leets.X.domain.post.dto.response;
 
 
+import com.leets.X.domain.image.dto.response.ImageResponse;
 import com.leets.X.domain.like.repository.LikeRepository;
 import com.leets.X.domain.post.domain.Post;
 import com.leets.X.domain.post.domain.enums.IsDeleted;
@@ -20,10 +21,10 @@ public record PostResponseDto(
         IsDeleted isDeleted,
         LocalDateTime createdAt,
         PostUserResponse user,
-        List<ImageResponseDto> images,
         Long likeCount,
-        List<PostResponseDto> replies,
-        Boolean isLikedByUser // 좋아요 여부 확인
+        Boolean isLikedByUser, // 좋아요 여부 확인
+        List<ImageResponse> images,
+        List<PostResponseDto> replies
 ) {
 
 
@@ -35,11 +36,11 @@ public record PostResponseDto(
                 post.getIsDeleted(),
                 post.getCreatedAt(),
                 convertUser(post.getUser()),
-                convertImagesToDtoList(post),
                 post.getLikesCount(),
-                convertRepliesToDtoList(post.getReplies()),
-                isLikedByUser // 서비스에서 전달된 boolean 값 사용
-        );
+                isLikedByUser, // 서비스에서 전달된 boolean 값 사용
+                convertImagesToDtoList(post),
+                convertRepliesToDtoList(post.getReplies())
+                );
     }
 
 
@@ -54,11 +55,11 @@ public record PostResponseDto(
                 post.getIsDeleted(),
                 post.getCreatedAt(),
                 convertUser(post.getUser()),
-                convertImagesToDtoList(post),
                 post.getLikesCount(),
-                convertRepliesToDtoList(post.getReplies()),
-                isLikedByUser // 좋아요 여부를 동적으로 설정
-        );
+                isLikedByUser, // 좋아요 여부를 동적으로 설정
+                convertImagesToDtoList(post),
+                convertRepliesToDtoList(post.getReplies())
+                );
     }
 
 
@@ -71,9 +72,12 @@ public record PostResponseDto(
         return user != null ? PostUserResponse.from(user) : null;
     }
 
-    private static List<ImageResponseDto> convertImagesToDtoList(Post post) {
-        return post.getImages() != null ? post.getImages().stream()
-                .map(ImageResponseDto::from)
-                .collect(Collectors.toList()) : Collections.emptyList();
+    private static List<ImageResponse> convertImagesToDtoList(Post post) {
+        return post.getImages().stream()
+                .map(ImageResponse::from)
+                .toList();
     }
+
 }
+
+

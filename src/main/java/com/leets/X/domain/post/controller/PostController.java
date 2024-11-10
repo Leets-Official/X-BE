@@ -9,11 +9,16 @@ import com.leets.X.global.common.response.ResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
+
+//컨트롤러에서 ResponseDto만들게끔
 @Tag(name = "POST")
 @RestController
 @RequestMapping("/api/v1/posts")
@@ -55,11 +60,13 @@ public class PostController {
     }
 
 
-    @PostMapping("/post")
+    @PostMapping(value = "/post", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "글 생성")
-    public ResponseDto<PostResponseDto> createPost(@RequestBody PostRequestDTO postRequestDTO, @AuthenticationPrincipal String email) {
+    public ResponseDto<PostResponseDto> createPost(@RequestPart PostRequestDTO postRequestDTO,
+                                                   @RequestPart(value = "files", required = false) List<MultipartFile> files,
+                                                   @AuthenticationPrincipal String email) throws IOException {
         // 인증된 사용자의 이메일을 `@AuthenticationPrincipal`을 통해 주입받음
-        PostResponseDto postResponseDto = postService.createPost(postRequestDTO, email);
+        PostResponseDto postResponseDto = postService.createPost(postRequestDTO, files , email);
         return ResponseDto.response(ResponseMessage.POST_SUCCESS.getCode(), ResponseMessage.POST_SUCCESS.getMessage(), postResponseDto);
     }
 
@@ -70,11 +77,14 @@ public class PostController {
         return ResponseDto.response(ResponseMessage.ADD_LIKE_SUCCESS.getCode(), responseMessage);
     }
 
-    @PostMapping("/{postId}/reply")
+    @PostMapping(value = "/{postId}/reply", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "답글 생성")
-    public ResponseDto<PostResponseDto> createReply(@PathVariable Long postId, @RequestBody PostRequestDTO postRequestDTO, @AuthenticationPrincipal String email) {
+    public ResponseDto<PostResponseDto> createReply(@PathVariable Long postId,
+                                                    @RequestPart PostRequestDTO postRequestDTO,
+                                                    @RequestPart(value = "files", required = false) List<MultipartFile> files,
+                                                    @AuthenticationPrincipal String email) throws IOException {
         // 답글 생성 서비스 호출 (부모 ID를 직접 전달)
-        PostResponseDto postResponseDto = postService.createReply(postId, postRequestDTO, email);
+        PostResponseDto postResponseDto = postService.createReply(postId, postRequestDTO, files, email);
         return ResponseDto.response(ResponseMessage.REPLY_SUCCESS.getCode(), ResponseMessage.REPLY_SUCCESS.getMessage(), postResponseDto);
     }
 
@@ -93,7 +103,5 @@ public class PostController {
         String responseMessage = postService.cancelLike(postId, email);
         return ResponseDto.response(ResponseMessage.LIKE_CANCEL_SUCCESS.getCode(), responseMessage);
     }
-
-
 
 }

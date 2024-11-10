@@ -7,6 +7,13 @@ springdoc:
     operations-sorter: method
     tags-sorter: alpha
 
+aws:
+  s3:
+    accessKey: ${S3_ACCESS_KEY}
+    secretKey: ${S3_SECRET_KEY}
+    bucketName: ${S3_BUCKET}
+    region: ap-northeast-2
+
 google:
   client-id: ${GOOGLE_CLIENT_ID}
   client-secret: ${GOOGLE_CLIENT_SECRET}

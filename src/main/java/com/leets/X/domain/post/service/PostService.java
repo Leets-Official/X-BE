@@ -1,5 +1,7 @@
 package com.leets.X.domain.post.service;
 
+import com.leets.X.domain.image.domain.Image;
+import com.leets.X.domain.image.service.ImageService;
 import com.leets.X.domain.like.domain.Like;
 import com.leets.X.domain.like.repository.LikeRepository;
 import com.leets.X.domain.post.domain.Post;
@@ -19,7 +21,9 @@ import com.leets.X.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,6 +35,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserService userService;
     private final LikeRepository likeRepository;
+    private final ImageService imageService;
 
     // 모든 부모 글만 조회 (자식 글 제외)
     public List<ParentPostResponseDto> getAllParentPosts(String email) {
@@ -91,7 +96,7 @@ public class PostService {
 
     // 글 생성
     @Transactional
-    public PostResponseDto createPost(PostRequestDTO postRequestDTO, String email) {
+    public PostResponseDto createPost(PostRequestDTO postRequestDTO,List<MultipartFile> files, String email) throws IOException {
         User user = userService.find(email);
         if (user == null) {
             throw new UserNotFoundException();
@@ -99,6 +104,11 @@ public class PostService {
 
         Post post = Post.create(user, postRequestDTO.content(), null);
         Post savedPost = postRepository.save(post);
+
+        if (files != null) {
+            List<Image> images = imageService.save(files, savedPost);
+            savedPost.addImage(images);
+        }
 
         return PostResponseDto.from(savedPost, false);
     }
@@ -121,12 +131,17 @@ public class PostService {
 
     // 답글 생성
     @Transactional
-    public PostResponseDto createReply(Long parentId, PostRequestDTO postRequestDTO, String email) {
+    public PostResponseDto createReply(Long parentId, PostRequestDTO postRequestDTO, List<MultipartFile> files, String email) throws IOException {
         User user = userService.find(email);
         Post parentPost = findPost(parentId);
 
         Post reply = Post.create(user, postRequestDTO.content(), parentPost);
         Post savedReply = postRepository.save(reply);
+
+        if (files != null) {
+            List<Image> images = imageService.save(files, savedReply);
+            savedReply.addImage(images);
+        }
 
         return PostResponseDto.from(savedReply, false);
     }
@@ -137,6 +152,7 @@ public class PostService {
         Post post = findPost(postId);
         User user = userService.find(email);
 
+        // 게시물의 소유자인지 확인
         if (!post.getUser().equals(user)) {
             throw new UnauthorizedPostDeletionException();
         }
@@ -177,4 +193,5 @@ public class PostService {
         User user = userService.find(email);
         return PostUserResponse.from(user);
     }
+
 }

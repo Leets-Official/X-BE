@@ -16,9 +16,9 @@ public record ParentPostResponseDto(
         IsDeleted isDeleted,
         LocalDateTime createdAt,
         PostUserResponse user,
-        List<ImageResponseDto> images,
         Long likeCount,
-        Boolean isLikedByUser
+        Boolean isLikedByUser,
+        List<ImageResponseDto> images
 ) {
     public static ParentPostResponseDto from(Post post, boolean isLikedByUser) {
         return new ParentPostResponseDto(
@@ -28,10 +28,10 @@ public record ParentPostResponseDto(
                 post.getIsDeleted(),
                 post.getCreatedAt(),
                 convertUser(post.getUser()),         // User 변환
-                convertImagesToDtoList(post),        // Images 변환
                 post.getLikesCount(),
-                isLikedByUser                        // 좋아요 여부 설정
-           );
+                isLikedByUser,                        // 좋아요 여부 설정
+                convertImagesToDtoList(post)        // Images 변환
+        );
 }
 
     private static PostUserResponse convertUser(User user) {

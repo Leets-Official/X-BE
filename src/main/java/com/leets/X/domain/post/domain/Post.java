@@ -1,6 +1,5 @@
 package com.leets.X.domain.post.domain;
 
-
 import com.leets.X.domain.image.domain.Image;
 import com.leets.X.domain.like.domain.Like;
 import com.leets.X.domain.post.domain.enums.IsDeleted;
@@ -40,7 +39,7 @@ public class Post extends BaseTimeEntity {
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Like> likes = new ArrayList<>();
 
-    @OneToMany(mappedBy = "post", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Image> images = new ArrayList<>();
 
 
@@ -54,6 +53,7 @@ public class Post extends BaseTimeEntity {
     private LocalDateTime deletedAt;
 
     // 좋아요 수를 관리하기 위한 필드
+
     @Column(name = "like_count")
     private Long likeCount = 0L; // 기본값을 0L로 초기화하여 null을 방지
 
@@ -61,10 +61,18 @@ public class Post extends BaseTimeEntity {
         this.likeCount = newLikeCount;
     }
 
+    public void decrementLikeCount() {
+        if (this.likeCount == null || this.likeCount == 0) {
+            this.likeCount = 0L; // null이거나 0일 경우 0으로 유지
+        } else {
+            this.likeCount--;
+        }
+    }
 
     public long getLikesCount() {
         return likeCount != null ? likeCount : 0; // null일 경우 0 반환
     }
+
 
 
     // 서비스에서 글의 상태를 삭제 상태로 바꾸기 위한 메서드
@@ -95,8 +103,13 @@ public class Post extends BaseTimeEntity {
                 .likeCount(0L)            // 기본값 설정
                 .isDeleted(IsDeleted.ACTIVE) // 기본값 설정
                 .parent(parent)           // 부모 글 설정
+                .images(new ArrayList<>()) // 빈 리스트로 초기화
                 .build();
 
+    }
+
+    public void addImage(List<Image> images) {
+        this.images.addAll(images); // 기존 리스트에 이미지 추가
     }
 }
 
