@@ -27,7 +27,7 @@ public class SwaggerConfig {
         SecurityRequirement securityRequirement = getSecurityRequireMent();
 
         return new OpenAPI()
-                .addServersItem(new Server().url("https://43.203.226.98.nip.io"))
+                .addServersItem(new Server().url("/"))
                 .components(new Components().addSecuritySchemes("bearerAuth", securityScheme))
                 .security(List.of(securityRequirement));
     }
