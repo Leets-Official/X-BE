@@ -3,7 +3,7 @@ package com.leets.X.domain.post.service;
 import com.leets.X.domain.follow.domain.Follow;
 import com.leets.X.domain.post.domain.Post;
 import com.leets.X.domain.post.domain.Repost;
-import com.leets.X.domain.post.domain.enums.Status;
+import com.leets.X.domain.post.domain.enums.Type;
 import com.leets.X.domain.post.dto.response.PostResponseDto;
 import com.leets.X.domain.post.exception.AlreadyRepostException;
 import com.leets.X.domain.post.repository.PostRepository;
@@ -77,14 +77,14 @@ public class RepostService {
     // 사용자 자신의 게시물을 가져오는 메서드
     private List<PostResponseDto> getUserPosts(User user, boolean isOwner) {
         return user.getPosts().stream()
-                .map(post -> PostResponseDto.from(post, Status.POST, isOwner))
+                .map(post -> PostResponseDto.from(post, Type.POST, isOwner))
                 .collect(Collectors.toList());
     }
 
     // 사용자 자신의 리포스트를 가져오는 메서드
     private List<PostResponseDto> getUserReposts(User user, boolean isOwner) {
         return user.getReposts().stream()
-                .map(repost -> PostResponseDto.from(repost.getPost(), Status.REPOST, isOwner))
+                .map(repost -> PostResponseDto.from(repost.getPost(), Type.REPOST, isOwner))
                 .collect(Collectors.toList());
     }
 
@@ -93,7 +93,7 @@ public class RepostService {
         return user.getFollowingList().stream()
                 .map(Follow::getFollowed)
                 .flatMap(followedUser -> followedUser.getPosts().stream())
-                .map(post -> PostResponseDto.from(post, Status.POST, false))
+                .map(post -> PostResponseDto.from(post, Type.POST, false))
                 .collect(Collectors.toList());
     }
 
@@ -102,7 +102,7 @@ public class RepostService {
         return user.getFollowingList().stream()
                 .map(Follow::getFollowed)
                 .flatMap(followedUser -> followedUser.getReposts().stream())
-                .map(repost -> PostResponseDto.from(repost.getPost(), Status.REPOST, false))
+                .map(repost -> PostResponseDto.from(repost.getPost(), Type.REPOST, false))
                 .collect(Collectors.toList());
     }
 
