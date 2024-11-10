@@ -103,8 +103,13 @@ public class Post extends BaseTimeEntity {
                 .likeCount(0L)            // 기본값 설정
                 .isDeleted(IsDeleted.ACTIVE) // 기본값 설정
                 .parent(parent)           // 부모 글 설정
+                .images(new ArrayList<>()) // 빈 리스트로 초기화
                 .build();
 
+    }
+
+    public void addImage(List<Image> images) {
+        this.images.addAll(images); // 기존 리스트에 이미지 추가
     }
 }
 

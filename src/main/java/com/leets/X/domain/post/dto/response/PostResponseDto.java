@@ -21,7 +21,7 @@ public record PostResponseDto(
         IsDeleted isDeleted,
         LocalDateTime createdAt,
         PostUserResponse user,
-        List<ImageResponseDto> images,
+        List<ImageResponse> images,
         Long likeCount,
         List<PostResponseDto> replies,
         Boolean isLikedByUser // 좋아요 여부 확인
@@ -77,7 +77,6 @@ public record PostResponseDto(
                 .map(ImageResponse::from)
                 .toList();
     }
-
 
 }
 
