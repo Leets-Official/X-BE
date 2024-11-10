@@ -82,6 +82,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         configuration.addAllowedOriginPattern("http://localhost:3000");
+        configuration.addAllowedOriginPattern("https://43.203.226.98.nip.io");
         configuration.addAllowedOriginPattern("http://127.0.0.1:5500"); // HTML Live Server CORS 설정
         configuration.addAllowedMethod("*");
         configuration.addAllowedHeader("*");
