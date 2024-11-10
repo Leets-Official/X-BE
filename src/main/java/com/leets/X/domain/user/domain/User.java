@@ -3,6 +3,7 @@ package com.leets.X.domain.user.domain;
 import com.leets.X.domain.follow.domain.Follow;
 import com.leets.X.domain.like.domain.Like;
 import com.leets.X.domain.post.domain.Post;
+import com.leets.X.domain.post.domain.Repost;
 import com.leets.X.domain.user.dto.request.UserInitializeRequest;
 import com.leets.X.domain.user.dto.request.UserUpdateRequest;
 import com.leets.X.global.common.domain.BaseTimeEntity;
@@ -62,6 +63,9 @@ public class User extends BaseTimeEntity {
     @OneToMany(mappedBy = "follower", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Follow> followingList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Repost> reposts = new ArrayList<>();
+
     public void initProfile(UserInitializeRequest dto){
         this.birth = dto.birth();
         this.customId = dto.customId();
@@ -90,6 +94,8 @@ public class User extends BaseTimeEntity {
         this.followingList.remove(follow);
     }
 
-
+    public void addRepost(Repost repost) {
+        this.reposts.add(repost);
+    }
 
 }
