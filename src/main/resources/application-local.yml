@@ -13,9 +13,10 @@ spring:
       ddl-auto: update
   data:
     redis:
-      host: ${REDIS_HOST}
       port: ${REDIS_PORT}
-
+      host: ${REDIS_HOST}
+    mongodb:
+      uri: mongodb://localhost:27017/testdb
 
 x:
   jwt:

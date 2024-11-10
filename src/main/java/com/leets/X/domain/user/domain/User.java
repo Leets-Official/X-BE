@@ -50,6 +50,9 @@ public class User extends BaseTimeEntity {
 
     private String introduce;
 
+    private long followerCount = 0L;
+
+    private long followingCount = 0L;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Post> posts = new ArrayList<>();
@@ -94,6 +97,25 @@ public class User extends BaseTimeEntity {
         this.followingList.remove(follow);
     }
 
+    public void updateFollowerCount(long followerCount) {
+        this.followerCount = followerCount;
+    }
+
+    public void decreaseFollowerCount() {
+        if(this.followerCount > 0){
+            this.followerCount--;
+        }
+    }
+
+    public void updateFollowingCount(long followingCount) {
+        this.followingCount = followingCount;
+    }
+
+    public void decreaseFollowingCount() {
+        if(this.followingCount>0) {
+            this.followingCount--;
+        }
+    }
     public void addRepost(Repost repost) {
         this.reposts.add(repost);
     }

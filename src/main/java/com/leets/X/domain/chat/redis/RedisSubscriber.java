@@ -28,13 +28,10 @@ public class RedisSubscriber implements MessageListener{
 
         log.info("구독자 전송 전 message: {}", tmpMessage);
         try {
-            // 역직렬화한 문자열을 PublishMessage로 변환
             PublishMessage publishMessage = obejctMapper.readValue(tmpMessage, PublishMessage.class);
-
             messageTemplate.convertAndSend("/sub/chats/" + publishMessage.getRoomId(), publishMessage);
             log.info("구독자 전송 후 message: {}", publishMessage.getContent());
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }

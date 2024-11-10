@@ -25,6 +25,8 @@ public class PublishMessage implements Serializable {
 
     private Long senderId;
 
+    private String senderName;
+
     private String content;
 
 }
