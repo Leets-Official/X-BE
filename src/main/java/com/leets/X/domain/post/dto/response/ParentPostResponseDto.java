@@ -21,7 +21,7 @@ public record ParentPostResponseDto(
         Type postType,
         Boolean myPost,
         Boolean isLikedByUser,
-        String replyTo,
+//        String replyTo,
         List<ImageResponse> images
 ) {
 

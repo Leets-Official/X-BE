@@ -28,7 +28,7 @@ public class PostMapper {
                 .isLikedByUser(isLikedByUser(post, user, likeRepository))
                 .postType(postType)
                 .myPost(isMyPost(post, user))
-                .replyTo(getCustomId(post))
+//                .replyTo(getCustomId(post))
                 .images(toImageResponse(post))
                 .replies(toReplies(post.getReplies(), user, likeRepository, postType))
                 .build();
@@ -47,7 +47,7 @@ public class PostMapper {
                 .repostingUserId(repostingUserId)
                 .postType(postType)
                 .myPost(isMyPost(post, user))
-                .replyTo(getCustomId(post))
+//                .replyTo(getCustomId(post))
                 .images(toImageResponse(post))
                 .build();
     }

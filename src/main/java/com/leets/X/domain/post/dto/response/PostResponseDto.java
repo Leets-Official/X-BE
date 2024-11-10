@@ -21,7 +21,7 @@ public record PostResponseDto(
         Boolean isLikedByUser, // 좋아요 여부 확인
         Type postType,
         Boolean myPost,
-        String replyTo,
+//        String replyTo,
         List<ImageResponse> images,
         List<PostResponseDto> replies
 ) {
