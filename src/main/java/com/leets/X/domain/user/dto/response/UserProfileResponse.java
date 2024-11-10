@@ -11,6 +11,7 @@ public record UserProfileResponse(
         Boolean isMyProfile,
         String name,
         String customId,
+        String introduce,
         Long followerCount,
         Long followingCount,
         Boolean isFollowing,
@@ -24,6 +25,7 @@ public record UserProfileResponse(
                 .isMyProfile(isMyProfile)
                 .name(user.getName())
                 .customId(user.getCustomId())
+                .introduce(user.getIntroduce())
                 .followerCount(user.getFollowerCount())
                 .followingCount(user.getFollowingCount())
                 .isFollowing(isFollowing)
