@@ -22,7 +22,7 @@ public class Image extends BaseTimeEntity {
 
     private String url;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_Id")
     private Post post;
 
