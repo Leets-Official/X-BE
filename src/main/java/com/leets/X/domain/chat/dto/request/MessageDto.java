@@ -19,6 +19,8 @@ public class MessageDto implements Serializable {
 
     private Long senderId;
 
+    private String senderName;
+
     private String content;
 
 }
