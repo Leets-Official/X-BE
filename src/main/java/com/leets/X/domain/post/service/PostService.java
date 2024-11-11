@@ -140,6 +140,8 @@ public class PostService {
         Post reply = Post.create(user, postRequestDTO.content(), parentPost);
         Post savedReply = postRepository.save(reply);
 
+        parentPost.increaseReplyCount();
+
         if (files != null) {
             List<Image> images = imageService.save(files, savedReply);
             savedReply.addImage(images);
@@ -158,6 +160,7 @@ public class PostService {
         }
 
         post.delete();
+        post.getParent().decreaseReplyCount();
     }
 
     // 좋아요 취소

@@ -16,6 +16,8 @@ public record ParentPostResponseDto(
         IsDeleted isDeleted,
         LocalDateTime createdAt,
         PostUserResponse user,
+        Long replyCount,
+        Long repostCount,
         Long likeCount,
         Long repostingUserId,
         Type postType,

@@ -38,6 +38,7 @@ public class RepostService {
 
         Repost repost = repostRepository.save(Repost.of(user, post));
         user.addRepost(repost);
+        post.increaseReplyCount();
     }
 
     public List<ParentPostResponseDto> getFollowingPost(String email) {

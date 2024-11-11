@@ -17,6 +17,8 @@ public record PostResponseDto(
         IsDeleted isDeleted,
         LocalDateTime createdAt,
         PostUserResponse user,
+        Long replyCount,
+        Long repostCount,
         Long likeCount,
         Boolean isLikedByUser, // 좋아요 여부 확인
         Type postType,
