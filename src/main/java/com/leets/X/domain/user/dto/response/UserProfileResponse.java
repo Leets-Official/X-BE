@@ -1,5 +1,6 @@
 package com.leets.X.domain.user.dto.response;
 
+import com.leets.X.domain.image.dto.request.ImageDto;
 import com.leets.X.domain.user.domain.User;
 import lombok.Builder;
 
@@ -16,10 +17,11 @@ public record UserProfileResponse(
         Long followingCount,
         Boolean isFollowing,
         LocalDateTime createdAt,
-        LocalDateTime updatedAt
+        LocalDateTime updatedAt,
+        ImageDto profileImage
         ) {
     // 정적 팩토리 메서드
-    public static UserProfileResponse from(User user, Boolean isMyProfile, Boolean isFollowing) {
+    public static UserProfileResponse from(User user, Boolean isMyProfile, Boolean isFollowing, ImageDto image) {
         return UserProfileResponse.builder()
                 .userId(user.getId())
                 .isMyProfile(isMyProfile)
@@ -31,6 +33,7 @@ public record UserProfileResponse(
                 .isFollowing(isFollowing)
                 .createdAt(user.getCreatedAt())
                 .updatedAt(user.getUpdatedAt())
+                .profileImage(image)
                 .build();
     }
 }
