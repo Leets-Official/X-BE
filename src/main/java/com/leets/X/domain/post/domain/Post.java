@@ -48,9 +48,14 @@ public class Post extends BaseTimeEntity {
 
     private Integer views;
 
+    @Enumerated(EnumType.STRING)
     private IsDeleted isDeleted;
 
     private LocalDateTime deletedAt;
+
+    private Long replyCount;
+
+    private Long repostCount;
 
     // 좋아요 수를 관리하기 위한 필드
 
@@ -110,6 +115,25 @@ public class Post extends BaseTimeEntity {
 
     public void addImage(List<Image> images) {
         this.images.addAll(images); // 기존 리스트에 이미지 추가
+    }
+
+    public void increaseReplyCount() {
+        this.replyCount++;
+    }
+
+    public void decreaseReplyCount() {
+        if(this.replyCount > 0L) {
+            this.replyCount--;
+        }
+    }
+
+    public void increaseRepostCount(){
+        this.repostCount++;
+    }
+    public void decreaseRepostCount() {
+        if(this.repostCount > 0L) {
+            this.repostCount--;
+        }
     }
 }
 

@@ -11,7 +11,6 @@ import com.leets.X.domain.post.dto.mapper.PostMapper;
 import com.leets.X.domain.post.dto.request.PostRequestDTO;
 import com.leets.X.domain.post.dto.response.ParentPostResponseDto;
 import com.leets.X.domain.post.dto.response.PostResponseDto;
-import com.leets.X.domain.post.dto.response.PostUserResponse;
 import com.leets.X.domain.post.exception.AlreadyLikedException;
 import com.leets.X.domain.post.exception.NotLikedException;
 import com.leets.X.domain.post.exception.PostNotFoundException;
@@ -52,7 +51,7 @@ public class PostService {
         return posts.stream()
                 .filter(post -> !followedUserIds.contains(post.getUser().getId()))
                 .map(post -> {
-                    return postMapper.toParentPostResponseDto(post, user, likeRepository, Type.POST, null);
+                    return postMapper.toParentPostResponseDto(post, user, likeRepository, Type.POST, null, null);
                 })
                 .collect(Collectors.toList());
     }
@@ -141,6 +140,8 @@ public class PostService {
         Post reply = Post.create(user, postRequestDTO.content(), parentPost);
         Post savedReply = postRepository.save(reply);
 
+        parentPost.increaseReplyCount();
+
         if (files != null) {
             List<Image> images = imageService.save(files, savedReply);
             savedReply.addImage(images);
@@ -159,6 +160,7 @@ public class PostService {
         }
 
         post.delete();
+        post.getParent().decreaseReplyCount();
     }
 
     // 좋아요 취소
@@ -190,10 +192,10 @@ public class PostService {
                 .orElseThrow(PostNotFoundException::new);
     }
 
-    public PostUserResponse findUser(String email) {
-        User user = userService.find(email);
-        return PostUserResponse.from(user);
-    }
+//    public PostUserResponse findUser(String email) {
+//        User user = userService.find(email);
+//        return PostUserResponse.from(user);
+//    }
 
 
 }

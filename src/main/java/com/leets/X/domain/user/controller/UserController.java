@@ -1,11 +1,11 @@
 package com.leets.X.domain.user.controller;
 
+import com.leets.X.domain.user.domain.enums.LoginStatus;
 import com.leets.X.domain.user.dto.request.UserInitializeRequest;
 import com.leets.X.domain.user.dto.request.UserSocialLoginRequest;
 import com.leets.X.domain.user.dto.request.UserUpdateRequest;
 import com.leets.X.domain.user.dto.response.UserProfileResponse;
 import com.leets.X.domain.user.dto.response.UserSocialLoginResponse;
-import com.leets.X.domain.user.domain.enums.LoginStatus;
 import com.leets.X.domain.user.service.UserService;
 import com.leets.X.global.common.response.ResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,8 +13,12 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 import static com.leets.X.domain.user.controller.ResponseMessage.*;
 
@@ -55,10 +59,12 @@ public class UserController {
         return ResponseDto.response(GET_PROFILE_SUCCESS.getCode(), GET_PROFILE_SUCCESS.getMessage(), userService.getProfile(userId, email));
     }
 
-    @PatchMapping("/profile")
+    @PatchMapping(value="/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "유저 프로필 수정")
-    public ResponseDto<String> updateProfile(@RequestBody @Valid UserUpdateRequest request, @AuthenticationPrincipal @Parameter(hidden = true) String email){
-        userService.updateProfile(request, email);
+    public ResponseDto<String> updateProfile(@RequestPart @Valid UserUpdateRequest request,
+                                             @RequestPart(value = "image", required = false) MultipartFile image,
+                                             @AuthenticationPrincipal @Parameter(hidden = true) String email) throws IOException {
+        userService.updateProfile(request, image, email);
         return ResponseDto.response(PROFILE_UPDATE_SUCCESS.getCode(), PROFILE_UPDATE_SUCCESS.getMessage());
     }
 

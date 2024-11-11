@@ -38,6 +38,7 @@ public class RepostService {
 
         Repost repost = repostRepository.save(Repost.of(user, post));
         user.addRepost(repost);
+        post.increaseReplyCount();
     }
 
     public List<ParentPostResponseDto> getFollowingPost(String email) {
@@ -81,14 +82,14 @@ public class RepostService {
     private List<ParentPostResponseDto> getUserPosts(User user, boolean isOwner) {
         return user.getPosts().stream()
                 .filter(post -> post.getParent() == null)
-                .map(post -> postMapper.toParentPostResponseDto(post, user, likeRepository, Type.POST, null))
+                .map(post -> postMapper.toParentPostResponseDto(post, user, likeRepository, Type.POST, null, null))
                 .collect(Collectors.toList());
     }
 
     // 사용자의 리포스트를 가져오는 메서드
     private List<ParentPostResponseDto> getUserReposts(User user, boolean isOwner) {
         return user.getReposts().stream()
-                .map(repost -> postMapper.toParentPostResponseDto(repost.getPost(), user, likeRepository, Type.REPOST, repost.getUser().getId()))
+                .map(repost -> postMapper.toParentPostResponseDto(repost.getPost(), user, likeRepository, Type.REPOST, repost.getUser().getId(), repost.getUser().getName()))
                 .collect(Collectors.toList());
     }
 
@@ -98,7 +99,7 @@ public class RepostService {
                 .map(Follow::getFollowed)
                 .flatMap(followedUser -> followedUser.getPosts().stream())
                 .filter(post -> post.getParent() == null)
-                .map(post -> postMapper.toParentPostResponseDto(post, user, likeRepository, Type.POST, null))
+                .map(post -> postMapper.toParentPostResponseDto(post, user, likeRepository, Type.POST, null, null))
                 .collect(Collectors.toList());
     }
 
@@ -107,7 +108,7 @@ public class RepostService {
         return user.getFollowingList().stream()
                 .map(Follow::getFollowed)
                 .flatMap(followedUser -> followedUser.getReposts().stream())
-                .map(repost -> postMapper.toParentPostResponseDto(repost.getPost(), user, likeRepository, Type.REPOST, repost.getUser().getId()))
+                .map(repost -> postMapper.toParentPostResponseDto(repost.getPost(), user, likeRepository, Type.REPOST, repost.getUser().getId(), repost.getUser().getName()))
                 .collect(Collectors.toList());
     }
 
