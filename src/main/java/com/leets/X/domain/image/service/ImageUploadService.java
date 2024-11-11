@@ -63,6 +63,39 @@ public class ImageUploadService {
 
         return images;
     }
+
+    public ImageDto uploadImage(MultipartFile image) throws IOException {
+
+            String originalName = image.getOriginalFilename();
+            String fileName = generateFileName(originalName);
+
+            try {
+                // PutObjectRequest 생성 및 설정
+                PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                        .bucket(bucketName)
+                        .key(fileName)
+                        .contentType(image.getContentType())
+                        .build();
+
+                // S3에 파일 업로드
+                PutObjectResponse response = s3Client.putObject(
+                        putObjectRequest,
+                        RequestBody.fromInputStream(image.getInputStream(), image.getSize())
+                );
+
+                // 업로드 성공 여부 확인
+                if (response.sdkHttpResponse().isSuccessful()) {
+                    // 업로드된 파일의 URL을 ImageDto로 추가
+                    return ImageDto.of(originalName, generateFileUrl(fileName));
+                } else {
+                    throw new S3UploadException();
+                }
+            } catch (S3Exception e) {
+                throw new S3UploadException();
+            }
+        }
+
+
     // S3에 저장된 파일 URL 생성
     private String generateFileUrl(String fileName) {
         return String.format("https://%s.s3.%s.amazonaws.com/%s", bucketName, region, fileName);

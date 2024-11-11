@@ -4,6 +4,7 @@ import com.leets.X.domain.image.domain.Image;
 import com.leets.X.domain.image.dto.request.ImageDto;
 import com.leets.X.domain.image.repository.ImageRepository;
 import com.leets.X.domain.post.domain.Post;
+import com.leets.X.domain.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +29,12 @@ public class ImageService {
                 .toList();
 
         return imageRepository.saveAll(imageList);
+    }
+
+    @Transactional
+    public Image save(MultipartFile image, User user) throws IOException {
+        ImageDto imageDto = imageUploadService.uploadImage(image);
+        return imageRepository.save(Image.from(imageDto, user));
     }
 
 }
