@@ -4,6 +4,7 @@ import com.leets.X.domain.chat.dto.response.ChattingDto;
 import com.leets.X.domain.chat.dto.response.ChattingListResponseDto;
 import com.leets.X.domain.chat.service.ChattingService;
 import com.leets.X.global.common.response.ResponseDto;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,8 +20,8 @@ public class ChattingController {
 
     private final ChattingService chattingService;
 
-    // 채팅방 하나를 조회해준다. (대화 내역을 돌려준다는 의미)
     @GetMapping("/chatting/{roomId}/{page}/{size}")
+    @Operation(summary = "하나의 채팅방 + 해당 채팅 내역 조회")
     public ResponseDto<ChattingDto> findChatting(@PathVariable Long roomId, @PathVariable Integer page, @PathVariable Integer size) {
         ChattingDto response = chattingService.getChatRoom(roomId, page, size);
         return ResponseDto.response(CHATROOM_GET.getCode(), CHATROOM_GET.getMessage(), response);
@@ -28,6 +29,7 @@ public class ChattingController {
 
 
     @GetMapping("/chattingList/{userId}")
+    @Operation(summary = "유저가 속한 모든 채팅방 조회")
     public ResponseDto<List<ChattingListResponseDto>> findChattingList(@PathVariable Long userId){
         List<ChattingListResponseDto> response = chattingService.getChattingList(userId);
         return ResponseDto.response(CHATTINGLIST_GET.getCode(), CHATTINGLIST_GET.getMessage(), response);

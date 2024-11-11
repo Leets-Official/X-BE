@@ -4,6 +4,7 @@ import com.leets.X.domain.chat.dto.request.FindChatRoomRequestDto;
 import com.leets.X.domain.chat.dto.response.ChatRoomResponseDto;
 import com.leets.X.domain.chat.service.ChatRoomService;
 import com.leets.X.global.common.response.ResponseDto;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ public class ChatRoomController {
     private final ChatRoomService chatRoomService;
 
     @PostMapping
+    @Operation(summary = "채팅 방 생성")
     public ResponseDto<ChatRoomResponseDto> createChatRoom(@RequestBody @Valid FindChatRoomRequestDto findChatRoomRequestDto){
         ChatRoomResponseDto response = chatRoomService.saveChatRoom(findChatRoomRequestDto);
         return ResponseDto.response(CHATROOM_CREATE_SUCCESS.getCode(), CHATROOM_CREATE_SUCCESS.getMessage(), response);
@@ -30,6 +32,7 @@ public class ChatRoomController {
 
     // user1Id와 user2Id의 채팅방이 있는 지 조회
     @GetMapping("/{user1Id}/{user2Id}")
+    @Operation(summary = "채팅방 존재 여부 확인")
     public ResponseDto<ChatRoomResponseDto> existChatRoom(@PathVariable Long user1Id, @PathVariable Long user2Id){
         ChatRoomResponseDto response = chatRoomService.findUser1User2ChatRoom(user1Id , user2Id);
 
@@ -37,6 +40,7 @@ public class ChatRoomController {
     }
 
     @PostMapping("/{roomId}") // addListener 테스트 용
+    @Operation(summary = "채팅 방 addListener 테스트")
     public void addListener(@PathVariable @NotNull Long roomId) {
         chatRoomService.addListener(roomId);
         log.info(roomId+":addListener");
