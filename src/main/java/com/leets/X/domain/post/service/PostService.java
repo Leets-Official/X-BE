@@ -11,7 +11,6 @@ import com.leets.X.domain.post.dto.mapper.PostMapper;
 import com.leets.X.domain.post.dto.request.PostRequestDTO;
 import com.leets.X.domain.post.dto.response.ParentPostResponseDto;
 import com.leets.X.domain.post.dto.response.PostResponseDto;
-import com.leets.X.domain.post.dto.response.PostUserResponse;
 import com.leets.X.domain.post.exception.AlreadyLikedException;
 import com.leets.X.domain.post.exception.NotLikedException;
 import com.leets.X.domain.post.exception.PostNotFoundException;
@@ -190,10 +189,10 @@ public class PostService {
                 .orElseThrow(PostNotFoundException::new);
     }
 
-    public PostUserResponse findUser(String email) {
-        User user = userService.find(email);
-        return PostUserResponse.from(user);
-    }
+//    public PostUserResponse findUser(String email) {
+//        User user = userService.find(email);
+//        return PostUserResponse.from(user);
+//    }
 
 
 }

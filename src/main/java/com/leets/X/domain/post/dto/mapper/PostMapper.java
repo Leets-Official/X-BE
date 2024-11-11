@@ -1,5 +1,7 @@
 package com.leets.X.domain.post.dto.mapper;
 
+import com.leets.X.domain.image.domain.Image;
+import com.leets.X.domain.image.dto.request.ImageDto;
 import com.leets.X.domain.image.dto.response.ImageResponse;
 import com.leets.X.domain.like.repository.LikeRepository;
 import com.leets.X.domain.post.domain.Post;
@@ -53,7 +55,12 @@ public class PostMapper {
     }
 
     public PostUserResponse toPostUserResponse(User user) {
-        return PostUserResponse.from(user);
+        ImageDto dto = null;
+        Image image = user.getImage();
+            if(image != null){
+                dto = ImageDto.of(image.getName(), image.getUrl());
+            }
+        return PostUserResponse.from(user, dto);
     }
 
     public List<ImageResponse> toImageResponse(Post post) {
