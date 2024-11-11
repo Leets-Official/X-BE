@@ -62,6 +62,13 @@ public class Post extends BaseTimeEntity {
     @Column(name = "like_count")
     private Long likeCount = 0L; // 기본값을 0L로 초기화하여 null을 방지
 
+    @PrePersist
+    public void init() {
+        replyCount = 0L;
+        repostCount = 0L;
+        likeCount = 0L;
+    }
+
     public void updateLikeCount(long newLikeCount) {
         this.likeCount = newLikeCount;
     }
