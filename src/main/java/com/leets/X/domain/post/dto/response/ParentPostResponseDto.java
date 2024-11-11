@@ -19,6 +19,7 @@ public record ParentPostResponseDto(
         Long replyCount,
         Long repostCount,
         Long likeCount,
+        String repostingUserName,
         Long repostingUserId,
         Type postType,
         Boolean myPost,

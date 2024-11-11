@@ -51,7 +51,7 @@ public class PostService {
         return posts.stream()
                 .filter(post -> !followedUserIds.contains(post.getUser().getId()))
                 .map(post -> {
-                    return postMapper.toParentPostResponseDto(post, user, likeRepository, Type.POST, null);
+                    return postMapper.toParentPostResponseDto(post, user, likeRepository, Type.POST, null, null);
                 })
                 .collect(Collectors.toList());
     }

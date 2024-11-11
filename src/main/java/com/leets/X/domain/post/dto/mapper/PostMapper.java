@@ -38,7 +38,7 @@ public class PostMapper {
                 .build();
     }
 
-    public ParentPostResponseDto toParentPostResponseDto(Post post, User user, LikeRepository likeRepository, Type postType, Long repostingUserId) {
+    public ParentPostResponseDto toParentPostResponseDto(Post post, User user, LikeRepository likeRepository, Type postType, Long repostingUserId, String reposingUserName) {
         return ParentPostResponseDto.builder()
                 .id(post.getId())
                 .content(post.getContent())
@@ -50,6 +50,7 @@ public class PostMapper {
                 .repostCount(post.getRepostCount())
                 .likeCount(post.getLikeCount())
                 .isLikedByUser(isLikedByUser(post, user, likeRepository))
+                .repostingUserName(reposingUserName)
                 .repostingUserId(repostingUserId)
                 .postType(postType)
                 .myPost(isMyPost(post, user))
