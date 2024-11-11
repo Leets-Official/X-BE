@@ -1,6 +1,5 @@
 package com.leets.X.domain.chat.controller;
 
-import com.leets.X.domain.chat.dto.request.ChatRoomCheckRequstDto;
 import com.leets.X.domain.chat.dto.request.FindChatRoomRequestDto;
 import com.leets.X.domain.chat.dto.response.ChatRoomResponseDto;
 import com.leets.X.domain.chat.service.ChatRoomService;
@@ -34,7 +33,7 @@ public class ChatRoomController {
     public ResponseDto<ChatRoomResponseDto> existChatRoom(@PathVariable Long user1Id, @PathVariable Long user2Id){
         ChatRoomResponseDto response = chatRoomService.findUser1User2ChatRoom(user1Id , user2Id);
 
-        return ResponseDto.response(GET_ROOMID.getCode(), GET_ROOMID.getMessage(), response);
+        return ResponseDto.response(ROOMID_GET.getCode(), ROOMID_GET.getMessage(), response);
     }
 
     @PostMapping("/{roomId}") // addListener 테스트 용
