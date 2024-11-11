@@ -37,4 +37,13 @@ public class ImageService {
         return imageRepository.save(Image.from(imageDto, user));
     }
 
+    public ImageDto getImage(MultipartFile image) throws IOException {
+        return imageUploadService.uploadImage(image);
+    }
+
+    @Transactional
+    public void delete(Image image) {
+        imageRepository.delete(image);
+    }
+
 }

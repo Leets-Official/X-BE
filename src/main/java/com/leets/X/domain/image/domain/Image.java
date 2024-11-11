@@ -47,4 +47,9 @@ public class Image extends BaseTimeEntity {
                 .build();
     }
 
+    public void update(ImageDto dto) {
+        this.name = dto.name();
+        this.url = dto.url();
+    }
+
 }
