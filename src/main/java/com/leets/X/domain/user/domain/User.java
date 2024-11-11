@@ -1,6 +1,7 @@
 package com.leets.X.domain.user.domain;
 
 import com.leets.X.domain.follow.domain.Follow;
+import com.leets.X.domain.image.domain.Image;
 import com.leets.X.domain.like.domain.Like;
 import com.leets.X.domain.post.domain.Post;
 import com.leets.X.domain.user.dto.request.UserInitializeRequest;
@@ -53,6 +54,9 @@ public class User extends BaseTimeEntity {
 
     private long followingCount = 0L;
 
+    @OneToOne(mappedBy = "user")
+    private Image image;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Post> posts = new ArrayList<>();
 
@@ -70,11 +74,12 @@ public class User extends BaseTimeEntity {
         this.customId = dto.customId();
     }
 
-    public void update(UserUpdateRequest dto){
+    public void update(UserUpdateRequest dto, Image image){
         this.name = dto.name();
         this.introduce = dto.introduce();
         this.location = dto.location();
         this.webSite = dto.webSite();
+        this.image = image;
     }
 
     public void addFollower(Follow follow) {
