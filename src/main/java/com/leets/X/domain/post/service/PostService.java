@@ -6,6 +6,8 @@ import com.leets.X.domain.like.domain.Like;
 import com.leets.X.domain.like.repository.LikeRepository;
 import com.leets.X.domain.post.domain.Post;
 import com.leets.X.domain.post.domain.enums.IsDeleted;
+import com.leets.X.domain.post.domain.enums.Type;
+import com.leets.X.domain.post.dto.mapper.PostMapper;
 import com.leets.X.domain.post.dto.request.PostRequestDTO;
 import com.leets.X.domain.post.dto.response.ParentPostResponseDto;
 import com.leets.X.domain.post.dto.response.PostResponseDto;
@@ -24,7 +26,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,67 +37,71 @@ public class PostService {
     private final UserService userService;
     private final LikeRepository likeRepository;
     private final ImageService imageService;
+    private final PostMapper postMapper;
 
-    // 모든 부모 글만 조회 (자식 글 제외)
+    // 추천 게시글 조회. following 되지 않은 글만 반환
     public List<ParentPostResponseDto> getAllParentPosts(String email) {
         User user = userService.find(email);
+
+        List<Long> followedUserIds = user.getFollowingList().stream()
+                .map(follow -> follow.getFollowed().getId())
+                .toList();
 
         List<Post> posts = postRepository.findByParentIsNullAndIsDeletedOrderByCreatedAtDesc(IsDeleted.ACTIVE);
 
         return posts.stream()
+                .filter(post -> !followedUserIds.contains(post.getUser().getId()))
                 .map(post -> {
-                    boolean isLikedByUser = likeRepository.existsByPostAndUser(post, user);
-                    return ParentPostResponseDto.from(post, isLikedByUser);
+                    return postMapper.toParentPostResponseDto(post, user, likeRepository, Type.POST, null);
                 })
                 .collect(Collectors.toList());
     }
 
-    // 전체 게시물 조회 (자식 글 포함)
+    // 상세조회
     public PostResponseDto getPostResponse(Long id, String email) {
         Post post = postRepository.findWithRepliesByIdAndIsDeleted(id, IsDeleted.ACTIVE)
                 .orElseThrow(PostNotFoundException::new);
 
         User user = userService.find(email);
-        boolean isLikedByUser = likeRepository.existsByPostAndUser(post, user);
 
-        return PostResponseDto.from(post, isLikedByUser);
+        return postMapper.toPostResponseDto(post, user, likeRepository, Type.POST);
     }
 
-    // 좋아요 순으로 게시물 조회
-    public List<PostResponseDto> getPostsSortedByLikes(String email) {
-        User user = userService.find(email);
-        List<Post> posts = postRepository.findAll();
-
-        return posts.stream()
-                .filter(post -> post.getIsDeleted() == IsDeleted.ACTIVE)
-                .sorted(Comparator.comparing(Post::getLikesCount).reversed())
-                .map(post -> {
-                    boolean isLikedByUser = likeRepository.existsByPostAndUser(post, user);
-                    return PostResponseDto.from(post, isLikedByUser);
-                })
-                .collect(Collectors.toList());
-    }
-
-    // 최신 부모 글 10개 조회 (자식 글 제외)
-    public List<ParentPostResponseDto> getLatestParentPosts(String email) {
-        User user = userService.find(email);
-
-        List<Post> posts = postRepository.findByParentIsNullAndIsDeletedOrderByCreatedAtDesc(IsDeleted.ACTIVE)
-                .stream()
-                .limit(10)
-                .collect(Collectors.toList());
-
-        return posts.stream()
-                .map(post -> {
-                    boolean isLikedByUser = likeRepository.existsByPostAndUser(post, user);
-                    return ParentPostResponseDto.from(post, isLikedByUser);
-                })
-                .collect(Collectors.toList());
-    }
+//    // 좋아요 순으로 게시물 조회
+//    public List<PostResponseDto> getPostsSortedByLikes(String email) {
+//        User user = userService.find(email);
+//        List<Post> posts = postRepository.findAll();
+//
+//        return posts.stream()
+//                .filter(post -> post.getIsDeleted() == IsDeleted.ACTIVE)
+//                .sorted(Comparator.comparing(Post::getLikesCount).reversed())
+//                .map(post -> {
+//                    boolean isLikedByUser = likeRepository.existsByPostAndUser(post, user);
+//                    return PostResponseDto.from(post, isLikedByUser);
+//                })
+//                .collect(Collectors.toList());
+//    }
+//
+//    // 최신 부모 글 10개 조회 (자식 글 제외)
+//    public List<ParentPostResponseDto> getLatestParentPosts(String email) {
+//        User user = userService.find(email);
+//
+//        List<Post> posts = postRepository.findByParentIsNullAndIsDeletedOrderByCreatedAtDesc(IsDeleted.ACTIVE)
+//                .stream()
+//                .limit(10)
+//                .collect(Collectors.toList());
+//
+//        return posts.stream()
+//                .map(post -> {
+//                    boolean isLikedByUser = likeRepository.existsByPostAndUser(post, user);
+//                    return ParentPostResponseDto.from(post, isLikedByUser);
+//                })
+//                .collect(Collectors.toList());
+//    }
 
     // 글 생성
     @Transactional
-    public PostResponseDto createPost(PostRequestDTO postRequestDTO,List<MultipartFile> files, String email) throws IOException {
+    public void createPost(PostRequestDTO postRequestDTO,List<MultipartFile> files, String email) throws IOException {
         User user = userService.find(email);
         if (user == null) {
             throw new UserNotFoundException();
@@ -109,8 +114,6 @@ public class PostService {
             List<Image> images = imageService.save(files, savedPost);
             savedPost.addImage(images);
         }
-
-        return PostResponseDto.from(savedPost, false);
     }
 
     // 좋아요 추가
@@ -131,7 +134,7 @@ public class PostService {
 
     // 답글 생성
     @Transactional
-    public PostResponseDto createReply(Long parentId, PostRequestDTO postRequestDTO, List<MultipartFile> files, String email) throws IOException {
+    public void createReply(Long parentId, PostRequestDTO postRequestDTO, List<MultipartFile> files, String email) throws IOException {
         User user = userService.find(email);
         Post parentPost = findPost(parentId);
 
@@ -142,8 +145,6 @@ public class PostService {
             List<Image> images = imageService.save(files, savedReply);
             savedReply.addImage(images);
         }
-
-        return PostResponseDto.from(savedReply, false);
     }
 
     // 게시물 삭제
@@ -193,5 +194,6 @@ public class PostService {
         User user = userService.find(email);
         return PostUserResponse.from(user);
     }
+
 
 }
