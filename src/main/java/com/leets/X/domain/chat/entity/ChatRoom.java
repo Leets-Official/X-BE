@@ -27,14 +27,11 @@ public class ChatRoom extends BaseTimeEntity {
     @JoinColumn(name = "user2_id")
     private User user2;
 
-    private String lastMessage;
-
     public static ChatRoom of(User user1, User user2) {
 
         return ChatRoom.builder()
                 .user1(user1)
                 .user2(user2)
-                .lastMessage("")
                 .build();
     }
 }
