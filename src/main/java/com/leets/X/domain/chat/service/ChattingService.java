@@ -12,6 +12,7 @@ import com.leets.X.domain.chat.redis.RedisListener;
 import com.leets.X.domain.chat.repository.ChatMessageRepository;
 import com.leets.X.domain.chat.repository.ChatRoomRepository;
 import com.leets.X.domain.user.domain.User;
+import com.leets.X.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -26,19 +27,19 @@ public class ChattingService {
     private final ChatRoomRepository chatRoomRepository;
     private final ChatMessageRepository chatMessageRepository;
     private final RedisListener redisMessageListener;
+    private final UserService userService;
 
-    public ChattingDto getChatRoom(Long roomId, Integer page, Integer size) {
+    public ChattingDto getChatRoom(Long roomId, Integer page, Integer size, String email) {
         ChatRoom findRoom = validateChatRoom(roomId);
-        User user1 = findRoom.getUser1();
-        User user2 = findRoom.getUser2();
         redisMessageListener.adaptMessageListener(findRoom.getId()); // 채팅방 내역 조회시 리스너 등록 추가 (운영 시 삭제)
 
         List<ChatMessageResponseDto> chatMessageList = generateChatRoomMessages(roomId, page, size);
-        return new ChattingDto(user1.getId(), user2.getId(), user1.getCustomId(), user2.getCustomId(), chatMessageList);
+        User sender = userService.find(email);
+
+        return findOpponent(sender, findRoom.getUser1(), findRoom.getUser2(), chatMessageList);
     }
 
-
-    public List<ChattingListResponseDto> getChattingList(Long userId) { // 추후 JWT 파싱으로 받아내기.
+    public List<ChattingListResponseDto> getChattingList(Long userId, String email) { // 추후 JWT 파싱으로 받아내기.
         List<ChatRoom> chatRooms = validateChatRommList(userId);
 
         return chatRooms.stream()
@@ -46,10 +47,15 @@ public class ChattingService {
                     ChatMessage latestMessage = chatMessageRepository.findTopByRoomIdOrderByCreatedAtDesc(chatRoom.getId()).orElse(null);
                     LatestMessageDto latestMessageDto = (latestMessage != null)
                             ? LatestMessageDto.of(latestMessage) : new LatestMessageDto("", null);
-                    return ChattingListResponseDto.of(chatRoom, latestMessageDto);
+                    User sender = userService.find(email);
+                    return findOpponentToAllChat(chatRoom, sender,chatRoom.getUser1(), chatRoom.getUser2(), latestMessageDto);
                 })
                 .collect(Collectors.toList());
     }
+
+    /*
+    * 리팩토링
+    * */
 
     private List<ChatMessageResponseDto> generateChatRoomMessages(Long roomId, Integer page, Integer size) {
         return chatMessageRepository.findByRoomIdOrderByCreatedAtDesc(
@@ -60,6 +66,21 @@ public class ChattingService {
                 .collect(Collectors.toList());
     }
 
+    private static ChattingDto findOpponent(User sender, User user1, User user2, List<ChatMessageResponseDto> chatMessageList) {
+        if(sender.equals(user1)) { // user1 이 본인
+            return ChattingDto.of(user1, user2, chatMessageList);
+        }else{
+            return ChattingDto.of(user2, user1, chatMessageList);
+        }
+    }
+
+    private static ChattingListResponseDto findOpponentToAllChat(ChatRoom chatRoom, User sender,User user1, User user2, LatestMessageDto latestMessageDto) {
+        if(sender.equals(user1)) { // user1 이 본인
+            return ChattingListResponseDto.of(chatRoom.getId(), user1, user2, latestMessageDto);
+        }else{
+            return ChattingListResponseDto.of(chatRoom.getId(), user2, user1, latestMessageDto);
+        }
+    }
 
     private ChatRoom validateChatRoom(Long roomId) {
         return chatRoomRepository.findById(roomId)

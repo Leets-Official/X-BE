@@ -1,22 +1,25 @@
 package com.leets.X.domain.chat.dto.response;
 
 import com.leets.X.domain.chat.entity.ChatRoom;
+import com.leets.X.domain.user.domain.User;
 
 public record ChattingListResponseDto(
         Long roomId,
-        Long user1Id,
-        Long user2Id,
-        String user1Name,
-        String user2Name,
+
+        Long senderId,
+        String senderName,
+
+        Long opponentId,
+        String opponentImageUrl,
+        String opponentName,
+
         LatestMessageDto latestMessageDto
 ) {
-    public static ChattingListResponseDto of(ChatRoom chatRoom, LatestMessageDto latestMessageDto) {
+    public static ChattingListResponseDto of(Long roomId, User sender, User opponent, LatestMessageDto latestMessageDto) {
         return new ChattingListResponseDto(
-                chatRoom.getId(),
-                chatRoom.getUser1().getId(),
-                chatRoom.getUser2().getId(),
-                chatRoom.getUser1().getCustomId(),
-                chatRoom.getUser2().getCustomId(),
+                roomId,
+                sender.getId(), sender.getName(),
+                opponent.getId(), opponent.getName(), opponent.getImage().getUrl(),
                 latestMessageDto
         );
     }

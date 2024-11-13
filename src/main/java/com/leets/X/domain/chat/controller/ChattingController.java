@@ -1,20 +1,21 @@
 package com.leets.X.domain.chat.controller;
 
-import com.leets.X.domain.chat.dto.request.GetChatRoomRequestDto;
 import com.leets.X.domain.chat.dto.response.ChattingDto;
 import com.leets.X.domain.chat.dto.response.ChattingListResponseDto;
 import com.leets.X.domain.chat.service.ChattingService;
 import com.leets.X.global.common.response.ResponseDto;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static com.leets.X.domain.chat.controller.ResponseMessage.GET_CHATROOM;
-import static com.leets.X.domain.chat.controller.ResponseMessage.GET_CHATTING_LIST;
+import static com.leets.X.domain.chat.controller.ResponseMessage.CHATROOM_GET;
+import static com.leets.X.domain.chat.controller.ResponseMessage.CHATTINGLIST_GET;
 
+@Tag(name="Chatting(ChatMessage)")
 @RestController
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
@@ -22,18 +23,20 @@ public class ChattingController {
 
     private final ChattingService chattingService;
 
-    // 채팅방 하나를 조회해준다. (대화 내역을 돌려준다는 의미)
     @GetMapping("/chatting/{roomId}/{page}/{size}")
-    public ResponseDto<ChattingDto> findChatting(@PathVariable Long roomId, @PathVariable Integer page, @PathVariable Integer size) {
-        ChattingDto response = chattingService.getChatRoom(roomId, page, size);
-        return ResponseDto.response(GET_CHATROOM.getCode(), GET_CHATROOM.getMessage(), response);
+    @Operation(summary = "하나의 채팅방 + 해당 채팅 내역 조회")
+    public ResponseDto<ChattingDto> findChatting(@PathVariable Long roomId, @PathVariable Integer page,
+                                                 @PathVariable Integer size, @AuthenticationPrincipal String email) {
+        ChattingDto response = chattingService.getChatRoom(roomId, page, size, email);
+        return ResponseDto.response(CHATROOM_GET.getCode(), CHATROOM_GET.getMessage(), response);
     }
 
 
     @GetMapping("/chattingList/{userId}")
-    public ResponseDto<List<ChattingListResponseDto>> findChattingList(@PathVariable Long userId){
-        List<ChattingListResponseDto> response = chattingService.getChattingList(userId);
-        return ResponseDto.response(GET_CHATTING_LIST.getCode(), GET_CHATTING_LIST.getMessage(), response);
+    @Operation(summary = "유저가 속한 모든 채팅방 조회")
+    public ResponseDto<List<ChattingListResponseDto>> findChattingList(@PathVariable Long userId, @AuthenticationPrincipal String email){
+        List<ChattingListResponseDto> response = chattingService.getChattingList(userId, email);
+        return ResponseDto.response(CHATTINGLIST_GET.getCode(), CHATTINGLIST_GET.getMessage(), response);
     }
 
 }

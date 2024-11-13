@@ -1,12 +1,26 @@
 package com.leets.X.domain.chat.dto.response;
 
+import com.leets.X.domain.user.domain.User;
+
 import java.util.List;
 
 public record ChattingDto(
-    Long user1Id,
-    Long user2Id,
-    String user1Name,
-    String user2Name,
+    Long senderId,
+    String senderName,
+
+    Long opponentId,
+    String opponentImageUrl,
+    String opponentName,
+
     List<ChatMessageResponseDto> chatMessageList
 ) {
+
+    public static ChattingDto of(User sender, User opponent, List<ChatMessageResponseDto> chatMessageList) {
+        return new ChattingDto(
+                sender.getId(), sender.getName(),
+                opponent.getId(), opponent.getName(), opponent.getImage().getUrl(),
+                chatMessageList
+        );
+    }
+
 }
