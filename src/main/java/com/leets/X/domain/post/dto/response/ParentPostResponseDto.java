@@ -1,14 +1,14 @@
 package com.leets.X.domain.post.dto.response;
 
-import com.leets.X.domain.post.domain.Post;
+import com.leets.X.domain.image.dto.response.ImageResponse;
 import com.leets.X.domain.post.domain.enums.IsDeleted;
-import com.leets.X.domain.user.domain.User;
+import com.leets.X.domain.post.domain.enums.Type;
+import lombok.Builder;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
+@Builder
 public record ParentPostResponseDto(
         Long id,
         String content,
@@ -16,31 +16,16 @@ public record ParentPostResponseDto(
         IsDeleted isDeleted,
         LocalDateTime createdAt,
         PostUserResponse user,
+        Long replyCount,
+        Long repostCount,
         Long likeCount,
+        String repostingUserName,
+        Long repostingUserId,
+        Type postType,
+        Boolean myPost,
         Boolean isLikedByUser,
-        List<ImageResponseDto> images
+//        String replyTo,
+        List<ImageResponse> images
 ) {
-    public static ParentPostResponseDto from(Post post, boolean isLikedByUser) {
-        return new ParentPostResponseDto(
-                post.getId(),
-                post.getContent(),
-                post.getViews(),
-                post.getIsDeleted(),
-                post.getCreatedAt(),
-                convertUser(post.getUser()),         // User 변환
-                post.getLikesCount(),
-                isLikedByUser,                        // 좋아요 여부 설정
-                convertImagesToDtoList(post)        // Images 변환
-        );
-}
 
-    private static PostUserResponse convertUser(User user) {
-        return user != null ? PostUserResponse.from(user) : null;
-    }
-
-    private static List<ImageResponseDto> convertImagesToDtoList(Post post) {
-        return post.getImages() != null ? post.getImages().stream()
-                .map(ImageResponseDto::from)
-                .collect(Collectors.toList()) : Collections.emptyList();
-    }
 }

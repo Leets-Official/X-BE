@@ -1,8 +1,10 @@
 package com.leets.X.domain.user.domain;
 
 import com.leets.X.domain.follow.domain.Follow;
+import com.leets.X.domain.image.domain.Image;
 import com.leets.X.domain.like.domain.Like;
 import com.leets.X.domain.post.domain.Post;
+import com.leets.X.domain.post.domain.Repost;
 import com.leets.X.domain.user.dto.request.UserInitializeRequest;
 import com.leets.X.domain.user.dto.request.UserUpdateRequest;
 import com.leets.X.global.common.domain.BaseTimeEntity;
@@ -53,6 +55,9 @@ public class User extends BaseTimeEntity {
 
     private long followingCount = 0L;
 
+    @OneToOne(mappedBy = "user")
+    private Image image;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Post> posts = new ArrayList<>();
 
@@ -65,16 +70,20 @@ public class User extends BaseTimeEntity {
     @OneToMany(mappedBy = "follower", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Follow> followingList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Repost> reposts = new ArrayList<>();
+
     public void initProfile(UserInitializeRequest dto){
         this.birth = dto.birth();
         this.customId = dto.customId();
     }
 
-    public void update(UserUpdateRequest dto){
+    public void update(UserUpdateRequest dto, Image image){
         this.name = dto.name();
         this.introduce = dto.introduce();
         this.location = dto.location();
         this.webSite = dto.webSite();
+        this.image = image;
     }
 
     public void addFollower(Follow follow) {
@@ -111,6 +120,9 @@ public class User extends BaseTimeEntity {
         if(this.followingCount>0) {
             this.followingCount--;
         }
+    }
+    public void addRepost(Repost repost) {
+        this.reposts.add(repost);
     }
 
 }

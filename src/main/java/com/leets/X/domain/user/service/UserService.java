@@ -1,6 +1,9 @@
 package com.leets.X.domain.user.service;
 
 import com.leets.X.domain.follow.domain.Follow;
+import com.leets.X.domain.image.domain.Image;
+import com.leets.X.domain.image.dto.request.ImageDto;
+import com.leets.X.domain.image.service.ImageService;
 import com.leets.X.domain.user.domain.User;
 import com.leets.X.domain.user.dto.request.UserInitializeRequest;
 import com.leets.X.domain.user.dto.request.UserUpdateRequest;
@@ -17,7 +20,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 import static com.leets.X.domain.user.domain.enums.LoginStatus.LOGIN;
@@ -29,6 +34,7 @@ import static com.leets.X.domain.user.domain.enums.LoginStatus.REGISTER;
 public class UserService {
 
     private final AuthService authService;
+    private final ImageService imageService;
     private final JwtProvider jwtProvider;
     private final UserRepository userRepository;
 
@@ -64,10 +70,18 @@ public class UserService {
         * 프로필 수정
      */
     @Transactional
-    public void updateProfile(UserUpdateRequest dto, String email){
+    public void updateProfile(UserUpdateRequest dto, MultipartFile image, String email) throws IOException {
         User user = find(email);
-
-        user.update(dto);
+        Image savedImage = user.getImage();
+       // 이미지가 없다면 새로 생성해서 저장
+        if(savedImage== null){
+            savedImage = imageService.save(image, user);
+        } else if (image != null) {
+            ImageDto imageDto = imageService.getImage(image);
+            savedImage.update(imageDto);
+        }
+        // 기존 이미지가 있다면 ImageDto를 생성해서 기존 이미지를 업데이트
+        user.update(dto, savedImage);
     }
 
     public UserProfileResponse getProfile(Long userId, String email){
@@ -75,7 +89,7 @@ public class UserService {
                 .orElseThrow(UserNotFoundException::new);
         boolean isMyProfile = user.getEmail().equals(email);
         boolean isFollowing = checkFollowing(user, email);
-        return UserProfileResponse.from(user, isMyProfile, isFollowing);
+        return UserProfileResponse.from(user, isMyProfile, isFollowing, getImage(user));
     }
 //
 //    @Transactional
@@ -114,6 +128,14 @@ public class UserService {
 
         return followerList.stream()
                 .anyMatch(follow -> follow.getFollower().getId().equals(source.getId()));
+    }
+
+    private ImageDto getImage(User user){
+        if(user.getImage() != null){
+            Image image = user.getImage();
+            return ImageDto.of(image.getName(), image.getUrl());
+        }
+        return null;
     }
 
     /*

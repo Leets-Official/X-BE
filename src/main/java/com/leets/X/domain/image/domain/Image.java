@@ -2,6 +2,7 @@ package com.leets.X.domain.image.domain;
 
 import com.leets.X.domain.image.dto.request.ImageDto;
 import com.leets.X.domain.post.domain.Post;
+import com.leets.X.domain.user.domain.User;
 import com.leets.X.global.common.domain.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -22,6 +23,10 @@ public class Image extends BaseTimeEntity {
 
     private String url;
 
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_Id")
     private Post post;
@@ -34,5 +39,17 @@ public class Image extends BaseTimeEntity {
                 .build();
     }
 
+    public static Image from(ImageDto dto, User user) {
+        return Image.builder()
+                .name(dto.name())
+                .url(dto.url())
+                .user(user)
+                .build();
+    }
+
+    public void update(ImageDto dto) {
+        this.name = dto.name();
+        this.url = dto.url();
+    }
 
 }
