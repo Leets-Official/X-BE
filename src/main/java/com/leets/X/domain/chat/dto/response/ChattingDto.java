@@ -9,8 +9,8 @@ public record ChattingDto(
     String senderName,
 
     Long opponentId,
-    String opponentImageUrl,
     String opponentName,
+    String opponentImageUrl,
 
     List<ChatMessageResponseDto> chatMessageList
 ) {

@@ -10,8 +10,8 @@ public record ChattingListResponseDto(
         String senderName,
 
         Long opponentId,
-        String opponentImageUrl,
         String opponentName,
+        String opponentImageUrl,
 
         LatestMessageDto latestMessageDto
 ) {
