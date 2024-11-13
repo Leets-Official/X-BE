@@ -14,7 +14,7 @@ import java.util.List;
 import static com.leets.X.domain.chat.controller.ResponseMessage.CHATROOM_GET;
 import static com.leets.X.domain.chat.controller.ResponseMessage.CHATTINGLIST_GET;
 
-@Tag(name="ChattingController", description = "채팅 내역을 담당하는 ChattingController")
+@Tag(name="Chatting(ChatMessage)")
 @RestController
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor

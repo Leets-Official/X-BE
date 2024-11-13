@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import static com.leets.X.domain.chat.controller.ResponseMessage.*;
 
-@Tag(name="ChatRoomController", description = "채팅방 생성과 입장을 책임지는 ChatRoomController")
+@Tag(name="ChatRoom")
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/chatRoom")
