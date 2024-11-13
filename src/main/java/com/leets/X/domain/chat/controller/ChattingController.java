@@ -5,6 +5,7 @@ import com.leets.X.domain.chat.dto.response.ChattingListResponseDto;
 import com.leets.X.domain.chat.service.ChattingService;
 import com.leets.X.global.common.response.ResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,6 +14,7 @@ import java.util.List;
 import static com.leets.X.domain.chat.controller.ResponseMessage.CHATROOM_GET;
 import static com.leets.X.domain.chat.controller.ResponseMessage.CHATTINGLIST_GET;
 
+@Tag(name="ChattingController", description = "채팅 내역을 담당하는 ChattingController")
 @RestController
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor

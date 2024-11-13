@@ -5,6 +5,7 @@ import com.leets.X.domain.chat.dto.response.ChatRoomResponseDto;
 import com.leets.X.domain.chat.service.ChatRoomService;
 import com.leets.X.global.common.response.ResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import static com.leets.X.domain.chat.controller.ResponseMessage.*;
 
+@Tag(name="ChatRoomController", description = "채팅방 생성과 입장을 책임지는 ChatRoomController")
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/chatRoom")
