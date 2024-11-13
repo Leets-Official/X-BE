@@ -53,10 +53,10 @@ public class UserController {
         return ResponseDto.response(INIT_PROFILE_SUCCESS.getCode(), INIT_PROFILE_SUCCESS.getMessage());
     }
 
-    @GetMapping("/profile/{userId}")
+    @GetMapping("/profile/{customId}")
     @Operation(summary = "유저 기본 프로필 조회")
-    public ResponseDto<UserProfileResponse> getUserProfile(@PathVariable Long userId, @AuthenticationPrincipal @Parameter(hidden = true) String email) {
-        return ResponseDto.response(GET_PROFILE_SUCCESS.getCode(), GET_PROFILE_SUCCESS.getMessage(), userService.getProfile(userId, email));
+    public ResponseDto<UserProfileResponse> getUserProfile(@PathVariable String customId, @AuthenticationPrincipal @Parameter(hidden = true) String email) {
+        return ResponseDto.response(GET_PROFILE_SUCCESS.getCode(), GET_PROFILE_SUCCESS.getMessage(), userService.getProfile(customId, email));
     }
 
     @PatchMapping(value="/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
