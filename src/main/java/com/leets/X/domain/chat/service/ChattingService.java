@@ -39,8 +39,9 @@ public class ChattingService {
         return findOpponent(sender, findRoom.getUser1(), findRoom.getUser2(), chatMessageList);
     }
 
-    public List<ChattingListResponseDto> getChattingList(Long userId, String email) { // 추후 JWT 파싱으로 받아내기.
-        List<ChatRoom> chatRooms = validateChatRommList(userId);
+    public List<ChattingListResponseDto> getChattingList(String customId, String email) { // 추후 JWT 파싱으로 받아내기.
+        User findUser = userService.findByCustomId(customId);
+        List<ChatRoom> chatRooms = validateChatRommList(findUser.getId());
 
         return chatRooms.stream()
                 .map(chatRoom -> {

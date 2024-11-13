@@ -30,7 +30,7 @@ public class ChatRoomService {
         User user1 = userService.findByCustomId(findChatRoomRequestDto.custom1Id());
         User user2 = userService.findByCustomId(findChatRoomRequestDto.custom2Id());
 
-        checkChatRoom(user1.getCustomId(), user2.getCustomId());
+        checkChatRoom(user1.getId(), user2.getId());
         ChatRoom savedRoom = chatRoomRepository.save(ChatRoom.of(user1, user2)); // 채팅방 RDB에 저장
 
         redisMessageListener.adaptMessageListener(savedRoom.getId()); // 리스너 등록
@@ -38,7 +38,9 @@ public class ChatRoomService {
     }
 
     public ChatRoomResponseDto findUser1User2ChatRoom(String custom1Id,String custom2Id) {
-        return new ChatRoomResponseDto(findUsersChatRoom(custom1Id, custom2Id));
+        User user1 = userService.findByCustomId(custom1Id);
+        User user2 = userService.findByCustomId(custom2Id);
+        return new ChatRoomResponseDto(findUsersChatRoom(user1.getId(),user2.getId()));
     }
 
     // 테스트를 위해서 만들어둠. 추후 삭제
@@ -48,14 +50,14 @@ public class ChatRoomService {
 
 
 
-    private void checkChatRoom(String custom1Id,String custom2Id) {
-        chatRoomRepository.findRoomIdByUserIds(custom1Id, custom2Id).ifPresent(c->{
+    private void checkChatRoom(Long user1Id, Long user2Id) {
+        chatRoomRepository.findRoomIdByUserIds(user1Id, user2Id).ifPresent(c->{
             throw new ChatRoomExistException();
         });
     }
 
-    private Long findUsersChatRoom(String custom1Id,String custom2Id) {
-        return chatRoomRepository.findRoomIdByUserIds(custom1Id, custom2Id)
+    private Long findUsersChatRoom(Long user1Id, Long user2Id) {
+        return chatRoomRepository.findRoomIdByUserIds(user1Id, user2Id)
                 .orElseThrow(NotFoundChatRoomException::new);
     }
 }
