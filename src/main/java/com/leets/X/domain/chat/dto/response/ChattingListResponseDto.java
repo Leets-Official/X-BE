@@ -16,10 +16,11 @@ public record ChattingListResponseDto(
         LatestMessageDto latestMessageDto
 ) {
     public static ChattingListResponseDto of(Long roomId, User sender, User opponent, LatestMessageDto latestMessageDto) {
+        String  url = (opponent.getImage()==null) ? ""  : opponent.getImage().getUrl();
         return new ChattingListResponseDto(
                 roomId,
                 sender.getId(), sender.getName(),
-                opponent.getId(), opponent.getName(), opponent.getImage().getUrl(),
+                opponent.getId(), opponent.getName(), url,
                 latestMessageDto
         );
     }

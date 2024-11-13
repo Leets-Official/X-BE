@@ -16,9 +16,10 @@ public record ChattingDto(
 ) {
 
     public static ChattingDto of(User sender, User opponent, List<ChatMessageResponseDto> chatMessageList) {
+        String  url = (opponent.getImage()==null) ? ""  : opponent.getImage().getUrl();
         return new ChattingDto(
                 sender.getId(), sender.getName(),
-                opponent.getId(), opponent.getName(), opponent.getImage().getUrl(),
+                opponent.getId(), opponent.getName(), url,
                 chatMessageList
         );
     }
