@@ -27,8 +27,8 @@ public class ChatRoomService {
     private final UserService userService;
 
     public ChatRoomResponseDto saveChatRoom(FindChatRoomRequestDto findChatRoomRequestDto) {
-        User user1 = userService.find(findChatRoomRequestDto.user1Id());
-        User user2 = userService.find(findChatRoomRequestDto.user2Id());
+        User user1 = userService.findByCustomId(findChatRoomRequestDto.custom1Id());
+        User user2 = userService.findByCustomId(findChatRoomRequestDto.custom2Id());
 
         checkChatRoom(user1.getId(), user2.getId());
         ChatRoom savedRoom = chatRoomRepository.save(ChatRoom.of(user1, user2)); // 채팅방 RDB에 저장
