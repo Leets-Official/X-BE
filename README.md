@@ -109,6 +109,13 @@
 - **채팅 기록 저장**: MongoDB를 사용해 채팅 메세지를 저장하고, 사용자에게 대화 기록 제공 ,데이터 특징을 고려하여, RDBMS와 NoSQL를 사용
 
 
+###
+시스템 아키텍처
+![image](https://github.com/user-attachments/assets/eee4205a-896a-4a27-8228-56fb9869254d)
+
+- **RDS(MySQL)**: 로컬 데이터 저장 역할
+- **Redis**: 채팅을 위한 리스너 등록
+- **MongoDB**: 채팅 메시지를 저장하기 위한 NoSQL DB
 
 
 ---
