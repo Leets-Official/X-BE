@@ -9,6 +9,7 @@ import com.leets.X.domain.user.dto.request.UserInitializeRequest;
 import com.leets.X.domain.user.dto.request.UserUpdateRequest;
 import com.leets.X.domain.user.dto.response.UserProfileResponse;
 import com.leets.X.domain.user.dto.response.UserSocialLoginResponse;
+import com.leets.X.domain.user.exception.DuplicateCustomIdException;
 import com.leets.X.domain.user.exception.UserNotFoundException;
 import com.leets.X.domain.user.repository.UserRepository;
 import com.leets.X.global.auth.google.AuthService;
@@ -62,7 +63,7 @@ public class UserService {
     @Transactional
     public void initProfile(UserInitializeRequest dto, String email){
         User user = find(email);
-
+        valid(dto.customId());
         user.initProfile(dto);
     }
 
@@ -84,8 +85,8 @@ public class UserService {
         user.update(dto, savedImage);
     }
 
-    public UserProfileResponse getProfile(Long userId, String email){
-        User user = userRepository.findById(userId)
+    public UserProfileResponse getProfile(String customId, String email){
+        User user = userRepository.findByCustomId(customId)
                 .orElseThrow(UserNotFoundException::new);
         boolean isMyProfile = user.getEmail().equals(email);
         boolean isFollowing = checkFollowing(user, email);
@@ -138,6 +139,12 @@ public class UserService {
         return null;
     }
 
+    private void valid(String customId) {
+        if(userRepository.existsByCustomId(customId)) {
+            throw new DuplicateCustomIdException();
+        }
+    }
+
     /*
         * userRepository에서 사용자를 검색하는 메서드
         * 공통으로 사용되는 부분이 많기 때문에 별도로 분리
@@ -149,6 +156,11 @@ public class UserService {
 
     public User find(Long userId){
         return userRepository.findById(userId)
+                .orElseThrow(UserNotFoundException::new);
+    }
+
+    public User findByCustomId(String customId){
+        return userRepository.findByCustomId(customId)
                 .orElseThrow(UserNotFoundException::new);
     }
 

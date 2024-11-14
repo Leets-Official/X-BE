@@ -33,10 +33,10 @@ public class ChatRoomController {
 
 
     // user1Id와 user2Id의 채팅방이 있는 지 조회
-    @GetMapping("/{user1Id}/{user2Id}")
+    @GetMapping("/{custom1Id}/{custom2Id}")
     @Operation(summary = "채팅방 존재 여부 확인")
-    public ResponseDto<ChatRoomResponseDto> existChatRoom(@PathVariable Long user1Id, @PathVariable Long user2Id){
-        ChatRoomResponseDto response = chatRoomService.findUser1User2ChatRoom(user1Id , user2Id);
+    public ResponseDto<ChatRoomResponseDto> existChatRoom(@PathVariable String custom1Id, @PathVariable String custom2Id){
+        ChatRoomResponseDto response = chatRoomService.findUser1User2ChatRoom(custom1Id , custom2Id);
 
         return ResponseDto.response(ROOMID_GET.getCode(), ROOMID_GET.getMessage(), response);
     }

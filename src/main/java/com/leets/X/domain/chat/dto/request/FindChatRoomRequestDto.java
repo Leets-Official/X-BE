@@ -4,6 +4,6 @@ import jakarta.validation.constraints.NotNull;
 
 public record FindChatRoomRequestDto(
 
-        @NotNull Long user1Id,
-        @NotNull Long user2Id
+        @NotNull String custom1Id,
+        @NotNull String custom2Id
 ){}

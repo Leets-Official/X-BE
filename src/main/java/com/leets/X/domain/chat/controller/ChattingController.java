@@ -32,10 +32,10 @@ public class ChattingController {
     }
 
 
-    @GetMapping("/chattingList/{userId}")
+    @GetMapping("/chattingList/{customId}")
     @Operation(summary = "유저가 속한 모든 채팅방 조회")
-    public ResponseDto<List<ChattingListResponseDto>> findChattingList(@PathVariable Long userId, @AuthenticationPrincipal String email){
-        List<ChattingListResponseDto> response = chattingService.getChattingList(userId, email);
+    public ResponseDto<List<ChattingListResponseDto>> findChattingList(@PathVariable String customId, @AuthenticationPrincipal String email){
+        List<ChattingListResponseDto> response = chattingService.getChattingList(customId, email);
         return ResponseDto.response(CHATTINGLIST_GET.getCode(), CHATTINGLIST_GET.getMessage(), response);
     }
 

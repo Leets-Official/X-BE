@@ -27,8 +27,8 @@ public class ChatRoomService {
     private final UserService userService;
 
     public ChatRoomResponseDto saveChatRoom(FindChatRoomRequestDto findChatRoomRequestDto) {
-        User user1 = userService.find(findChatRoomRequestDto.user1Id());
-        User user2 = userService.find(findChatRoomRequestDto.user2Id());
+        User user1 = userService.findByCustomId(findChatRoomRequestDto.custom1Id());
+        User user2 = userService.findByCustomId(findChatRoomRequestDto.custom2Id());
 
         checkChatRoom(user1.getId(), user2.getId());
         ChatRoom savedRoom = chatRoomRepository.save(ChatRoom.of(user1, user2)); // 채팅방 RDB에 저장
@@ -37,8 +37,10 @@ public class ChatRoomService {
         return new ChatRoomResponseDto(savedRoom.getId());
     }
 
-    public ChatRoomResponseDto findUser1User2ChatRoom(Long user1Id , Long user2Id) {
-        return new ChatRoomResponseDto(findUsersChatRoom(user1Id, user2Id));
+    public ChatRoomResponseDto findUser1User2ChatRoom(String custom1Id,String custom2Id) {
+        User user1 = userService.findByCustomId(custom1Id);
+        User user2 = userService.findByCustomId(custom2Id);
+        return new ChatRoomResponseDto(findUsersChatRoom(user1.getId(),user2.getId()));
     }
 
     // 테스트를 위해서 만들어둠. 추후 삭제
