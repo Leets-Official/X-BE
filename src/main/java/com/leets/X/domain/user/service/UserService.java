@@ -100,8 +100,11 @@ public class UserService {
 
     private UserSocialLoginResponse loginUser(String email) {
         User user = find(email);
-
-        return new UserSocialLoginResponse(user.getId(), LOGIN, generateToken(email));
+        String customId = null;
+        if(user.getCustomId() != null){
+            customId = user.getCustomId();
+        }
+        return new UserSocialLoginResponse(user.getId(), LOGIN, customId, generateToken(email));
     }
 
     private UserSocialLoginResponse registerUser(GoogleUserInfoResponse userInfo) {
@@ -112,7 +115,7 @@ public class UserService {
 
         userRepository.save(user);
 
-        return new UserSocialLoginResponse(user.getId(), REGISTER, generateToken(user.getEmail()));
+        return new UserSocialLoginResponse(user.getId(), REGISTER, null, generateToken(user.getEmail()));
     }
 
     private JwtResponse generateToken (String email){

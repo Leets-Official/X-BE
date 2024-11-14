@@ -8,6 +8,7 @@ import lombok.Builder;
 public record UserSocialLoginResponse(
         Long id,
         LoginStatus status,
+        String customId,
         JwtResponse jwtToken
 ) {
 }
