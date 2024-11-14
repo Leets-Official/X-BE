@@ -84,6 +84,7 @@ public class SecurityConfig {
         configuration.addAllowedOriginPattern("http://localhost:3000");
         configuration.addAllowedOriginPattern("https://43.203.226.98.nip.io");
         configuration.addAllowedOriginPattern("https://x-fe-a.vercel.app");
+        configuration.addAllowedOriginPattern("https://x-fe-a-git-feat-36-kimjiwons-projects.vercel.app");
         configuration.addAllowedOriginPattern("http://127.0.0.1:5500"); // HTML Live Server CORS 설정
         configuration.addAllowedMethod("*");
         configuration.addAllowedHeader("*");
@@ -96,3 +97,4 @@ public class SecurityConfig {
         return source;
     }
 }
+
