@@ -26,7 +26,7 @@
     </td>
     <td align="center">
       <a href="https://github.com/koreaioi" target="_blank">
-        <img src="https://avatars.githubusercontent.com/u/147616203?v=4" width="100px;" alt="송우석"/><br />
+        <img src="https://github-production-user-asset-6210df.s3.amazonaws.com/147616203/385806379-2893107d-c675-43ce-8175-66860664348a.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAVCODYLSA53PQK4ZA%2F20241113%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20241113T144803Z&X-Amz-Expires=300&X-Amz-Signature=a58e6a55cd586ea251417e60f517b01d6b744890fb242a9a9e59a175a2b63a5c&X-Amz-SignedHeaders=host" width="100px;" alt="송우석"/><br />
         <b>송우석</b> <br>(4기)
       </a>
       <p>ERD 설계 <br> API 명세서 작성 <br> 채팅 서비스 구현</p>
@@ -92,7 +92,7 @@
 
 ### 🏠 홈 화면 (HOME)
 - **타임라인 피드**: 팔로우한 사용자의 게시물을 실시간 피드 형식으로 제공
-- **실시간 업데이트**: 새로운 게시물 및 이벤트 발생 시 피드에 자동 반영
+- **추천 게시물** : Home 추천 게시물 목록이 조회됩니다.
 
 ### 📄 프로필 관리 (PROFILE)
 - **프로필 사진 업로드**: 프로필 사진 업로드 및 변경 기능 제공
@@ -105,10 +105,11 @@
 - **미디어 업로드**: 사진 업로드 기능으로 콘텐츠 표현 강화
 
 ### 💬 채팅 (Chat)
-- **실시간 채팅**: WebSocket을 이용하여 1:1 실시간 채팅 구현
-- **채팅 기록 저장**: MongoDB를 사용해 채팅 기록을 저장하고, 사용자에게 대화 기록 제공
-- **알림 기능**: 새로운 메시지 도착 시 사용자에게 알림 제공
----
+
+- **실시간 채팅**: WebSocket과 메세지 큐 Redis를 사용하여 1:1 실시간 채팅 구현
+- **채팅 기록 저장**: MongoDB를 사용해 채팅 메세지를 저장하고, 사용자에게 대화 기록 제공 ,데이터 특징을 고려하여, RDBMS와 NoSQL를 사용
+
+
 ###
 시스템 아키텍처
 ![image](https://github.com/user-attachments/assets/eee4205a-896a-4a27-8228-56fb9869254d)
